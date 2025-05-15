@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.abuwx.mapper.ShebaoEvaluationMapper">
+    
+    <resultMap type="ShebaoEvaluation" id="ShebaoEvaluationResult">
+        <result property="id"    column="id"    />
+        <result property="applicationId"    column="application_id"    />
+        <result property="evaluatorId"    column="evaluator_id"    />
+        <result property="evaluatorName"    column="evaluator_name"    />
+        <result property="truthScore"    column="truth_score"    />
+        <result property="severityScore"    column="severity_score"    />
+        <result property="necessityScore"    column="necessity_score"    />
+        <result property="totalScore"    column="total_score"    />
+        <result property="opinion"    column="opinion"    />
+        <result property="evaluationTime"    column="evaluation_time"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectShebaoEvaluationVo">
+        select id, application_id, evaluator_id, evaluator_name, truth_score, severity_score, necessity_score, total_score, opinion, evaluation_time, status, create_time, update_time from shebao_evaluation
+    </sql>
+
+    <select id="selectShebaoEvaluationList" parameterType="ShebaoEvaluation" resultMap="ShebaoEvaluationResult">
+        <include refid="selectShebaoEvaluationVo"/>
+        <where>  
+            <if test="applicationId != null "> and application_id = #{applicationId}</if>
+            <if test="evaluatorId != null  and evaluatorId != ''"> and evaluator_id = #{evaluatorId}</if>
+            <if test="evaluatorName != null  and evaluatorName != ''"> and evaluator_name like concat('%', #{evaluatorName}, '%')</if>
+            <if test="truthScore != null "> and truth_score = #{truthScore}</if>
+            <if test="severityScore != null "> and severity_score = #{severityScore}</if>
+            <if test="necessityScore != null "> and necessity_score = #{necessityScore}</if>
+            <if test="totalScore != null "> and total_score = #{totalScore}</if>
+            <if test="opinion != null  and opinion != ''"> and opinion = #{opinion}</if>
+            <if test="evaluationTime != null "> and evaluation_time = #{evaluationTime}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectShebaoEvaluationById" parameterType="Long" resultMap="ShebaoEvaluationResult">
+        <include refid="selectShebaoEvaluationVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertShebaoEvaluation" parameterType="ShebaoEvaluation" useGeneratedKeys="true" keyProperty="id">
+        insert into shebao_evaluation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applicationId != null">application_id,</if>
+            <if test="evaluatorId != null and evaluatorId != ''">evaluator_id,</if>
+            <if test="evaluatorName != null">evaluator_name,</if>
+            <if test="truthScore != null">truth_score,</if>
+            <if test="severityScore != null">severity_score,</if>
+            <if test="necessityScore != null">necessity_score,</if>
+            <if test="totalScore != null">total_score,</if>
+            <if test="opinion != null">opinion,</if>
+            <if test="evaluationTime != null">evaluation_time,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applicationId != null">#{applicationId},</if>
+            <if test="evaluatorId != null and evaluatorId != ''">#{evaluatorId},</if>
+            <if test="evaluatorName != null">#{evaluatorName},</if>
+            <if test="truthScore != null">#{truthScore},</if>
+            <if test="severityScore != null">#{severityScore},</if>
+            <if test="necessityScore != null">#{necessityScore},</if>
+            <if test="totalScore != null">#{totalScore},</if>
+            <if test="opinion != null">#{opinion},</if>
+            <if test="evaluationTime != null">#{evaluationTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateShebaoEvaluation" parameterType="ShebaoEvaluation">
+        update shebao_evaluation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applicationId != null">application_id = #{applicationId},</if>
+            <if test="evaluatorId != null and evaluatorId != ''">evaluator_id = #{evaluatorId},</if>
+            <if test="evaluatorName != null">evaluator_name = #{evaluatorName},</if>
+            <if test="truthScore != null">truth_score = #{truthScore},</if>
+            <if test="severityScore != null">severity_score = #{severityScore},</if>
+            <if test="necessityScore != null">necessity_score = #{necessityScore},</if>
+            <if test="totalScore != null">total_score = #{totalScore},</if>
+            <if test="opinion != null">opinion = #{opinion},</if>
+            <if test="evaluationTime != null">evaluation_time = #{evaluationTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteShebaoEvaluationById" parameterType="Long">
+        delete from shebao_evaluation where id = #{id}
+    </delete>
+
+    <delete id="deleteShebaoEvaluationByIds" parameterType="String">
+        delete from shebao_evaluation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

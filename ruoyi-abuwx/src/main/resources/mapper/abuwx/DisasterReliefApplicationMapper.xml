@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.abuwx.mapper.DisasterReliefApplicationMapper">
+    
+    <resultMap type="DisasterReliefApplication" id="DisasterReliefApplicationResult">
+        <result property="id"    column="id"    />
+        <result property="reportId"    column="report_id"    />
+        <result property="name"    column="name"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="phone"    column="phone"    />
+        <result property="address"    column="address"    />
+        <result property="familySize"    column="family_size"    />
+        <result property="disasterType"    column="disaster_type"    />
+        <result property="disasterDate"    column="disaster_date"    />
+        <result property="disasterDesc"    column="disaster_desc"    />
+        <result property="lossTypes"    column="loss_types"    />
+        <result property="houseDamage"    column="house_damage"    />
+        <result property="cropArea"    column="crop_area"    />
+        <result property="estimatedLoss"    column="estimated_loss"    />
+        <result property="lossDesc"    column="loss_desc"    />
+        <result property="reliefTypes"    column="relief_types"    />
+        <result property="requestAmount"    column="request_amount"    />
+        <result property="materialNeeds"    column="material_needs"    />
+        <result property="otherNeeds"    column="other_needs"    />
+        <result property="evidenceFiles"    column="evidence_files"    />
+        <result property="evidenceDesc"    column="evidence_desc"    />
+        <result property="status"    column="status"    />
+        <result property="auditUserId"    column="audit_user_id"    />
+        <result property="auditTime"    column="audit_time"    />
+        <result property="auditRemark"    column="audit_remark"    />
+        <result property="declaration"    column="declaration"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDisasterReliefApplicationVo">
+        select id, report_id, name, id_card, phone, address, family_size, disaster_type, disaster_date, disaster_desc, loss_types, house_damage, crop_area, estimated_loss, loss_desc, relief_types, request_amount, material_needs, other_needs, evidence_files, evidence_desc, status, audit_user_id, audit_time, audit_remark, declaration, create_time, update_time from disaster_relief_application
+    </sql>
+
+    <select id="selectDisasterReliefApplicationList" parameterType="DisasterReliefApplication" resultMap="DisasterReliefApplicationResult">
+        <include refid="selectDisasterReliefApplicationVo"/>
+        <where>  
+            <if test="reportId != null  and reportId != ''"> and report_id = #{reportId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="familySize != null "> and family_size = #{familySize}</if>
+            <if test="disasterType != null  and disasterType != ''"> and disaster_type = #{disasterType}</if>
+            <if test="disasterDate != null "> and disaster_date = #{disasterDate}</if>
+            <if test="disasterDesc != null  and disasterDesc != ''"> and disaster_desc = #{disasterDesc}</if>
+            <if test="lossTypes != null  and lossTypes != ''"> and loss_types = #{lossTypes}</if>
+            <if test="houseDamage != null  and houseDamage != ''"> and house_damage = #{houseDamage}</if>
+            <if test="cropArea != null "> and crop_area = #{cropArea}</if>
+            <if test="estimatedLoss != null "> and estimated_loss = #{estimatedLoss}</if>
+            <if test="lossDesc != null  and lossDesc != ''"> and loss_desc = #{lossDesc}</if>
+            <if test="reliefTypes != null  and reliefTypes != ''"> and relief_types = #{reliefTypes}</if>
+            <if test="requestAmount != null "> and request_amount = #{requestAmount}</if>
+            <if test="materialNeeds != null  and materialNeeds != ''"> and material_needs = #{materialNeeds}</if>
+            <if test="otherNeeds != null  and otherNeeds != ''"> and other_needs = #{otherNeeds}</if>
+            <if test="evidenceFiles != null  and evidenceFiles != ''"> and evidence_files = #{evidenceFiles}</if>
+            <if test="evidenceDesc != null  and evidenceDesc != ''"> and evidence_desc = #{evidenceDesc}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="auditUserId != null "> and audit_user_id = #{auditUserId}</if>
+            <if test="auditTime != null "> and audit_time = #{auditTime}</if>
+            <if test="auditRemark != null  and auditRemark != ''"> and audit_remark = #{auditRemark}</if>
+            <if test="declaration != null "> and declaration = #{declaration}</if>
+        </where>
+    </select>
+    
+    <select id="selectDisasterReliefApplicationById" parameterType="Long" resultMap="DisasterReliefApplicationResult">
+        <include refid="selectDisasterReliefApplicationVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertDisasterReliefApplication" parameterType="DisasterReliefApplication" useGeneratedKeys="true" keyProperty="id">
+        insert into disaster_relief_application
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportId != null and reportId != ''">report_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="idCard != null and idCard != ''">id_card,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="familySize != null">family_size,</if>
+            <if test="disasterType != null and disasterType != ''">disaster_type,</if>
+            <if test="disasterDate != null">disaster_date,</if>
+            <if test="disasterDesc != null and disasterDesc != ''">disaster_desc,</if>
+            <if test="lossTypes != null">loss_types,</if>
+            <if test="houseDamage != null">house_damage,</if>
+            <if test="cropArea != null">crop_area,</if>
+            <if test="estimatedLoss != null">estimated_loss,</if>
+            <if test="lossDesc != null">loss_desc,</if>
+            <if test="reliefTypes != null">relief_types,</if>
+            <if test="requestAmount != null">request_amount,</if>
+            <if test="materialNeeds != null">material_needs,</if>
+            <if test="otherNeeds != null">other_needs,</if>
+            <if test="evidenceFiles != null">evidence_files,</if>
+            <if test="evidenceDesc != null">evidence_desc,</if>
+            <if test="status != null">status,</if>
+            <if test="auditUserId != null">audit_user_id,</if>
+            <if test="auditTime != null">audit_time,</if>
+            <if test="auditRemark != null">audit_remark,</if>
+            <if test="declaration != null">declaration,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportId != null and reportId != ''">#{reportId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="idCard != null and idCard != ''">#{idCard},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="familySize != null">#{familySize},</if>
+            <if test="disasterType != null and disasterType != ''">#{disasterType},</if>
+            <if test="disasterDate != null">#{disasterDate},</if>
+            <if test="disasterDesc != null and disasterDesc != ''">#{disasterDesc},</if>
+            <if test="lossTypes != null">#{lossTypes},</if>
+            <if test="houseDamage != null">#{houseDamage},</if>
+            <if test="cropArea != null">#{cropArea},</if>
+            <if test="estimatedLoss != null">#{estimatedLoss},</if>
+            <if test="lossDesc != null">#{lossDesc},</if>
+            <if test="reliefTypes != null">#{reliefTypes},</if>
+            <if test="requestAmount != null">#{requestAmount},</if>
+            <if test="materialNeeds != null">#{materialNeeds},</if>
+            <if test="otherNeeds != null">#{otherNeeds},</if>
+            <if test="evidenceFiles != null">#{evidenceFiles},</if>
+            <if test="evidenceDesc != null">#{evidenceDesc},</if>
+            <if test="status != null">#{status},</if>
+            <if test="auditUserId != null">#{auditUserId},</if>
+            <if test="auditTime != null">#{auditTime},</if>
+            <if test="auditRemark != null">#{auditRemark},</if>
+            <if test="declaration != null">#{declaration},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDisasterReliefApplication" parameterType="DisasterReliefApplication">
+        update disaster_relief_application
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reportId != null and reportId != ''">report_id = #{reportId},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="idCard != null and idCard != ''">id_card = #{idCard},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="familySize != null">family_size = #{familySize},</if>
+            <if test="disasterType != null and disasterType != ''">disaster_type = #{disasterType},</if>
+            <if test="disasterDate != null">disaster_date = #{disasterDate},</if>
+            <if test="disasterDesc != null and disasterDesc != ''">disaster_desc = #{disasterDesc},</if>
+            <if test="lossTypes != null">loss_types = #{lossTypes},</if>
+            <if test="houseDamage != null">house_damage = #{houseDamage},</if>
+            <if test="cropArea != null">crop_area = #{cropArea},</if>
+            <if test="estimatedLoss != null">estimated_loss = #{estimatedLoss},</if>
+            <if test="lossDesc != null">loss_desc = #{lossDesc},</if>
+            <if test="reliefTypes != null">relief_types = #{reliefTypes},</if>
+            <if test="requestAmount != null">request_amount = #{requestAmount},</if>
+            <if test="materialNeeds != null">material_needs = #{materialNeeds},</if>
+            <if test="otherNeeds != null">other_needs = #{otherNeeds},</if>
+            <if test="evidenceFiles != null">evidence_files = #{evidenceFiles},</if>
+            <if test="evidenceDesc != null">evidence_desc = #{evidenceDesc},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="auditUserId != null">audit_user_id = #{auditUserId},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="auditRemark != null">audit_remark = #{auditRemark},</if>
+            <if test="declaration != null">declaration = #{declaration},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <select id="selectMaxReportId" resultType="java.lang.Long">
+        SELECT MAX(report_id) FROM disaster_relief_application
+    </select>
+    <delete id="deleteDisasterReliefApplicationById" parameterType="Long">
+        delete from disaster_relief_application where id = #{id}
+    </delete>
+    <select id="selectDisasterReliefApplicationByIdCard" parameterType="String" resultMap="DisasterReliefApplicationResult">
+        <include refid="selectDisasterReliefApplicationVo"/>
+        where id_card = #{idCard}
+        order by create_time desc
+    </select>
+
+    <!-- 根据手机号码查询申报记录 -->
+    <select id="selectDisasterReliefApplicationByPhone" parameterType="String" resultMap="DisasterReliefApplicationResult">
+        <include refid="selectDisasterReliefApplicationVo"/>
+        where phone = #{phone}
+        order by create_time desc
+    </select>
+
+    <!-- 根据申报编号查询申报记录 -->
+    <select id="selectDisasterReliefApplicationByReportId" parameterType="String" resultMap="DisasterReliefApplicationResult">
+        <include refid="selectDisasterReliefApplicationVo"/>
+        where report_id = #{reportId}
+    </select>
+    <delete id="deleteDisasterReliefApplicationByIds" parameterType="String">
+        delete from disaster_relief_application where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
