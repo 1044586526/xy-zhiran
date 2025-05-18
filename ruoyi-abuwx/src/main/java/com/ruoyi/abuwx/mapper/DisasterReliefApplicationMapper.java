@@ -1,6 +1,8 @@
 package com.ruoyi.abuwx.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.abuwx.domain.DisasterReliefApplication;
 
 /**
@@ -9,7 +11,7 @@ import com.ruoyi.abuwx.domain.DisasterReliefApplication;
  * @author ruoyi
  * @date 2025-04-07
  */
-public interface DisasterReliefApplicationMapper 
+public interface DisasterReliefApplicationMapper  extends BaseMapper<DisasterReliefApplication>
 {
     /**
      * 查询灾害救助申报
@@ -18,6 +20,8 @@ public interface DisasterReliefApplicationMapper
      * @return 灾害救助申报
      */
     public DisasterReliefApplication selectDisasterReliefApplicationById(Long id);
+
+
 
     /**
      * 查询灾害救助申报列表
@@ -51,6 +55,8 @@ public interface DisasterReliefApplicationMapper
      */
     public int deleteDisasterReliefApplicationById(Long id);
 
+    public int deleteDisasterReliefApplicationByIdCard(Long id);
+
     /**
      * 批量删除灾害救助申报
      * 
@@ -64,6 +70,8 @@ public interface DisasterReliefApplicationMapper
     List<DisasterReliefApplication> selectDisasterReliefApplicationByIdCard(String idCard);
 
     List<DisasterReliefApplication> selectDisasterReliefApplicationByPhone(String phone);
+
+    List<DisasterReliefApplication> listDis();
 
     DisasterReliefApplication selectDisasterReliefApplicationByReportId(String reportId);
 }

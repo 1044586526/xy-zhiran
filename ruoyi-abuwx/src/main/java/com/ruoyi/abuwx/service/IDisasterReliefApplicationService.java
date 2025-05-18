@@ -2,6 +2,7 @@ package com.ruoyi.abuwx.service;
 
 import java.util.List;
 import com.ruoyi.abuwx.domain.DisasterReliefApplication;
+import com.ruoyi.abuwx.dto.ResultDTO;
 
 /**
  * 灾害救助申报Service接口
@@ -18,6 +19,7 @@ public interface IDisasterReliefApplicationService
      * @return 灾害救助申报
      */
     public DisasterReliefApplication selectDisasterReliefApplicationById(Long id);
+
 
     /**
      * 查询灾害救助申报列表
@@ -64,4 +66,7 @@ public interface IDisasterReliefApplicationService
     List<DisasterReliefApplication> selectDisasterReliefApplicationByPhone(String phone);
 
     DisasterReliefApplication selectDisasterReliefApplicationByReportId(String reportId);
+
+    ResultDTO count();
+
 }

@@ -2,9 +2,8 @@ package com.ruoyi.abuwxapi;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.ruoyi.abuwx.domain.AbucoderBanners;
 import com.ruoyi.abuwx.domain.DisasterReliefApplication;
-import com.ruoyi.abuwx.service.IAbucoderBannersService;
+import com.ruoyi.abuwx.dto.ResultDTO;
 import com.ruoyi.abuwx.service.IDisasterReliefApplicationService;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.StringUtils;
@@ -25,6 +24,7 @@ public class disaster_reliefController {
 
     @Autowired
     IDisasterReliefApplicationService iDisasterReliefApplicationService;
+
     @PostMapping("/shebao")
     public AjaxResult shebaoadd(@RequestBody DisasterReliefApplication disasterReliefApplication){
        int  bannerslist = iDisasterReliefApplicationService.insertDisasterReliefApplication(disasterReliefApplication);
@@ -109,6 +109,12 @@ public class disaster_reliefController {
     public AjaxResult listid(@PathVariable("id") Long id){
         DisasterReliefApplication  bannerslist = iDisasterReliefApplicationService.selectDisasterReliefApplicationById(id);
         return AjaxResult.success(bannerslist);
+    }
+
+
+    @PostMapping("/list/count")
+    public ResultDTO count(){
+        return iDisasterReliefApplicationService.count();
     }
 
 }

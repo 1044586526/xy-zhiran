@@ -33,10 +33,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="declaration"    column="declaration"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="cardNo"    column="card_no"    />
+
     </resultMap>
 
     <sql id="selectDisasterReliefApplicationVo">
-        select id, report_id, name, id_card, phone, address, family_size, disaster_type, disaster_date, disaster_desc, loss_types, house_damage, crop_area, estimated_loss, loss_desc, relief_types, request_amount, material_needs, other_needs, evidence_files, evidence_desc, status, audit_user_id, audit_time, audit_remark, declaration, create_time, update_time from disaster_relief_application
+        select id, report_id, name, id_card, phone, address, family_size, disaster_type, disaster_date, disaster_desc, loss_types, house_damage, crop_area, estimated_loss, loss_desc, relief_types, request_amount, material_needs, other_needs, evidence_files, evidence_desc, status, audit_user_id, audit_time, audit_remark, declaration, create_time, update_time,card_no from disaster_relief_application
     </sql>
 
     <select id="selectDisasterReliefApplicationList" parameterType="DisasterReliefApplication" resultMap="DisasterReliefApplicationResult">
@@ -67,6 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="auditTime != null "> and audit_time = #{auditTime}</if>
             <if test="auditRemark != null  and auditRemark != ''"> and audit_remark = #{auditRemark}</if>
             <if test="declaration != null "> and declaration = #{declaration}</if>
+            <if test="cardNo != null "> and cardNo = #{cardNo}</if>
         </where>
     </select>
     
@@ -105,6 +108,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="declaration != null">declaration,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="cardNo != null">cardNo,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="reportId != null and reportId != ''">#{reportId},</if>
@@ -134,6 +138,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="declaration != null">#{declaration},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="cardNo != null">cardNo,</if>
          </trim>
     </insert>
 
@@ -167,6 +172,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="declaration != null">declaration = #{declaration},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="cardNo != null">cardNo,</if>
         </trim>
         where id = #{id}
     </update>
@@ -188,6 +194,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where phone = #{phone}
         order by create_time desc
     </select>
+
+    <select id="listDis"  resultMap="DisasterReliefApplicationResult">
+        SELECT * FROM disaster_relief_application WHERE status = 1;
+    </select>
+
+
+
 
     <!-- 根据申报编号查询申报记录 -->
     <select id="selectDisasterReliefApplicationByReportId" parameterType="String" resultMap="DisasterReliefApplicationResult">

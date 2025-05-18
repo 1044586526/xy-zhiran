@@ -66,6 +66,15 @@
 					<text class="function-desc">查看已公示的救助信息</text>
 				</view>
 			</view>
+			<view class="function-item data" @click="goToDataQuery">
+				<view class="function-icon-box">
+					<text class="cuIcon-list"></text>
+				</view>
+				<view class="function-info">
+					<text class="function-title">数据统计</text>
+					<text class="function-desc">查看审批通过的名单和总金额</text>
+				</view>
+			</view>
 		</view>
 		
 		<!-- 灾情概览 -->
@@ -307,6 +316,26 @@
 				}
 			},
 			
+			goToDataQuery() {
+				try {
+					uni.navigateTo({
+						url: '../disaster/dataStat',
+						success: function() {
+							console.log('跳转成功');
+						},
+						fail: function(err) {
+							console.error('跳转失败', err);
+							uni.showToast({
+								title: '页面跳转失败，请检查页面路径',
+								icon: 'none'
+							});
+						}
+					});
+				} catch(e) {
+					console.error('跳转异常', e);
+				}
+			},
+			
 			// 查看更多通知
 			noticeMore() {
 				uni.navigateTo({
@@ -524,6 +553,9 @@
 	.function-item.public::after {
 		background: linear-gradient(to bottom, #0acf83, #00e778);
 	}
+	.function-item.data::after {
+		background: linear-gradient(to bottom,  rgba(255, 255, 0, 1), rgba(255, 255, 0, 1));
+	}
 	
 	.function-icon-box {
 		width: 100rpx;
@@ -549,6 +581,10 @@
 	.function-item.public .function-icon-box {
 		background: rgba(10, 207, 131, 0.1);
 		color: #0acf83;
+	}
+	.function-item.data .function-icon-box {
+		background: rgba(255, 255, 0, 0.1);
+		color: rgba(255, 255, 0, 1);
 	}
 	
 	.function-info {

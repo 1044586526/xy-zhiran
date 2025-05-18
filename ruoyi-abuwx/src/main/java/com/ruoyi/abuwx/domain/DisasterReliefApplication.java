@@ -123,7 +123,23 @@ public class DisasterReliefApplication extends BaseEntity
     @Excel(name = "申报人声明确认")
     private Integer declaration;
 
-    public void setId(Long id) 
+
+    /**
+     * 银行卡号
+     */
+    @Excel(name = "银行卡号")
+    private String cardNo;
+
+
+    public String getCardNo() {
+        return cardNo;
+    }
+
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -360,35 +376,34 @@ public class DisasterReliefApplication extends BaseEntity
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("reportId", getReportId())
-            .append("name", getName())
-            .append("idCard", getIdCard())
-            .append("phone", getPhone())
-            .append("address", getAddress())
-            .append("familySize", getFamilySize())
-            .append("disasterType", getDisasterType())
-            .append("disasterDate", getDisasterDate())
-            .append("disasterDesc", getDisasterDesc())
-            .append("lossTypes", getLossTypes())
-            .append("houseDamage", getHouseDamage())
-            .append("cropArea", getCropArea())
-            .append("estimatedLoss", getEstimatedLoss())
-            .append("lossDesc", getLossDesc())
-            .append("reliefTypes", getReliefTypes())
-            .append("requestAmount", getRequestAmount())
-            .append("materialNeeds", getMaterialNeeds())
-            .append("otherNeeds", getOtherNeeds())
-            .append("evidenceFiles", getEvidenceFiles())
-            .append("evidenceDesc", getEvidenceDesc())
-            .append("status", getStatus())
-            .append("auditUserId", getAuditUserId())
-            .append("auditTime", getAuditTime())
-            .append("auditRemark", getAuditRemark())
-            .append("declaration", getDeclaration())
-            .append("createTime", getCreateTime())
-            .append("updateTime", getUpdateTime())
-            .toString();
+        return "DisasterReliefApplication{" +
+                "id=" + id +
+                ", reportId='" + reportId + '\'' +
+                ", name='" + name + '\'' +
+                ", idCard='" + idCard + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", familySize=" + familySize +
+                ", disasterType='" + disasterType + '\'' +
+                ", disasterDate=" + disasterDate +
+                ", disasterDesc='" + disasterDesc + '\'' +
+                ", lossTypes='" + lossTypes + '\'' +
+                ", houseDamage='" + houseDamage + '\'' +
+                ", cropArea=" + cropArea +
+                ", estimatedLoss=" + estimatedLoss +
+                ", lossDesc='" + lossDesc + '\'' +
+                ", reliefTypes='" + reliefTypes + '\'' +
+                ", requestAmount=" + requestAmount +
+                ", materialNeeds='" + materialNeeds + '\'' +
+                ", otherNeeds='" + otherNeeds + '\'' +
+                ", evidenceFiles='" + evidenceFiles + '\'' +
+                ", evidenceDesc='" + evidenceDesc + '\'' +
+                ", status=" + status +
+                ", auditUserId=" + auditUserId +
+                ", auditTime=" + auditTime +
+                ", auditRemark='" + auditRemark + '\'' +
+                ", declaration=" + declaration +
+                ", cardNo='" + cardNo + '\'' +
+                '}';
     }
 }

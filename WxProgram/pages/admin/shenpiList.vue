@@ -377,11 +377,10 @@
 			// 获取状态文本
 			getStatusText(status) {
 				const statusMap = {
-					0: '待提交',
-					1: '待审批',
-					2: '已驳回',
-					3: '已通过',
-					4: '已发放'
+					0: '待审核',
+					1: '审核通过',
+					2: '审核拒绝',
+					3: '已发放',
 				};
 				return statusMap[status] || '未知状态';
 			},
@@ -587,7 +586,8 @@
 	}
 
 	.status-1 {
-		background-color: #E6A23C;
+		background-color: #67C23A;
+		
 	}
 
 	.status-2 {
@@ -595,7 +595,7 @@
 	}
 
 	.status-3 {
-		background-color: #67C23A;
+		background-color: #409EFF;
 	}
 
 	.status-4 {

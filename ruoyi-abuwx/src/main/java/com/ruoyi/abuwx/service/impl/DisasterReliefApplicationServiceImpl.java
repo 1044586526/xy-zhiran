@@ -1,6 +1,12 @@
 package com.ruoyi.abuwx.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruoyi.abuwx.dto.ResultDTO;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +37,8 @@ public class DisasterReliefApplicationServiceImpl implements IDisasterReliefAppl
     {
         return disasterReliefApplicationMapper.selectDisasterReliefApplicationById(id);
     }
+
+
 
     /**
      * 查询灾害救助申报列表
@@ -132,6 +140,26 @@ public class DisasterReliefApplicationServiceImpl implements IDisasterReliefAppl
     public DisasterReliefApplication selectDisasterReliefApplicationByReportId(String reportId) {
         return disasterReliefApplicationMapper.selectDisasterReliefApplicationByReportId(reportId);
     }
+
+
+    @Override
+    public ResultDTO count() {
+        ResultDTO resultDTO = new ResultDTO();
+        List<DisasterReliefApplication> disasterReliefApplications = disasterReliefApplicationMapper.listDis();
+        if (CollectionUtils.isNotEmpty(disasterReliefApplications)){
+            resultDTO.setList(disasterReliefApplications);
+            BigDecimal totalRequestAmount = disasterReliefApplications.stream()
+                    .map(DisasterReliefApplication::getRequestAmount)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            resultDTO.setCount(totalRequestAmount);
+
+        }
+        return resultDTO;
+    }
+
+
+
 
 
 }
