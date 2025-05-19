@@ -144,7 +144,7 @@
         	}
         },
         {
-        	"path" : "pages/disaster/dataStat",
+        	"path" : "pages/admin/dataStat",
         	"style" : 
         	{
         		"navigationBarTitleText" : "数据统计"

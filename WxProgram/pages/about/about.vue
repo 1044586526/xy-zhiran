@@ -15,7 +15,7 @@
       <view class="tabs">
         <view 
           class="tab-item" 
-          v-for="(tab, index) in tabs" 
+          v-for="(tab, index) in getTabs" 
           :key="index" 
           :class="{ active: currentTab === index }"
           @tap="switchTab(index)"
@@ -26,7 +26,7 @@
       </view>
       
       <!-- 使用指南 -->
-      <view v-if="currentTab === 0" class="tab-content guide-content">
+      <view v-if="!isAdmin && currentTab === 0" class="tab-content guide-content">
         <view class="guide-section" v-for="(section, sectionIndex) in guideData" :key="sectionIndex">
           <view class="section-header" @tap="toggleSection(sectionIndex)">
             <text class="section-title">{{ section.title }}</text>
@@ -53,7 +53,7 @@
       </view>
       
       <!-- 常见问题 -->
-      <view v-if="currentTab === 1" class="tab-content faq-content">
+      <view v-if="!isAdmin && currentTab === 1" class="tab-content faq-content">
         <view class="faq-item" v-for="(faq, index) in faqData" :key="index" @tap="toggleFaq(index)">
           <view class="faq-question">
             <text class="question-icon cuIcon-question"></text>
@@ -68,9 +68,9 @@
       </view>
       
       <!-- 用户留言 -->
-      <view v-if="currentTab === 2" class="tab-content feedback-content">
+      <view v-if="currentTab === 2 || (isAdmin && currentTab === 0 || currentTab === 1)" class="tab-content feedback-content">
         <!-- 留言表单 -->
-        <view class="feedback-form">
+        <view class="feedback-form" v-if="currentTab === 2 || isAdmin && currentTab === 0">
           <view class="form-header">
             <text class="form-title">您的建议和问题</text>
             <text class="form-subtitle">提交您的问题或建议，我们会尽快回复</text>
@@ -102,7 +102,7 @@
         <!-- 留言列表 -->
         <view class="feedback-list">
           <view class="list-header">
-            <text class="list-title">历史留言</text>
+            <text class="list-title">{{ isAdmin ? currentTab === 0 ? "待回复留言" : "历史留言" : "历史留言"}}</text>
             <text class="list-count">(共{{ feedbackList.length }}条)</text>
           </view>
           
@@ -126,6 +126,9 @@
 		</view>
 	</view>
 	
+
+	
+	
           <view class="load-more" v-if="hasMoreFeedback" @tap="loadMoreFeedback">
             <text class="more-text">加载更多</text>
           </view>
@@ -145,6 +148,7 @@
 </template>
 
 <script>
+			import { baseUrl } from "@/utils/apiconfig.js";
   export default {
     data() {
       return {
@@ -288,7 +292,8 @@
             reply: '您好，我们将在下次更新中增加更多灾害类型选项，同时您也可以选择"其他灾害"并在描述中详细说明。'
           }
         ],
-        hasMoreFeedback: true
+        hasMoreFeedback: true,
+		userRole: 'user', // 默认为普通用户
       }
     },
     onLoad(options) {
@@ -300,11 +305,66 @@
       // 启动动画
       this._startLikeAnimation();
     },
+	
+	computed: {
+		// 判断是否为管理员
+		isAdmin() {
+			return this.userRole === 'admin';
+		},
+		
+		getTabs() {
+			
+			return  this.isAdmin 
+			?
+			[
+				{ name: '待回复留言', icon: 'cuIcon-comment' },
+				{ name: '历史留言', icon: 'cuIcon-comment' }
+				
+			]
+			:
+			[
+				{ name: '使用指南', icon: 'cuIcon-formfill' },
+				{ name: '常见问题', icon: 'cuIcon-questionfill' },
+				{ name: '留言反馈', icon: 'cuIcon-comment' }
+			]
+		},
+	},
     methods: {
       // 切换标签页
       switchTab(index) {
-        this.currentTab = index;
+		 this.currentTab = index;
+       
       },
+	  
+	 getUserRole() {
+	 	try {
+	 		// 首先尝试从本地缓存读取完整的用户信息
+	 		const localUserInfo = uni.getStorageSync('userinfo');
+	 		const userInfo = JSON.parse(localUserInfo)
+	 		if (userInfo && (userInfo.role)) {
+	 			const roleFromStorage = userInfo.role;
+	 			console.log('从本地缓存获取用户角色:', roleFromStorage);
+	 			
+	 			// 设置用户角色
+	 			this.userRole = roleFromStorage.toLowerCase();
+	 			return; // 已获取到角色，直接返回，不发送请求
+	 		}
+	 		
+	 		
+	 		// 如果本地没有角色信息，再尝试从服务器获取
+	 		if (!baseUrl) {
+	 			console.log('未设置baseUrl，无法获取用户角色');
+	 			this.userRole = 'user'; // 默认为普通用户
+	 			return;
+	 		}
+	 		
+	 		// 为防止404错误，先打个日志
+	 		console.log('准备从服务器获取用户角色，URL:', `${baseUrl}/wxapi/user/role`);
+	 	} catch (error) {
+	 		console.error('获取用户角色出错:', error);
+	 		this.userRole = 'user'; // 默认为普通用户
+	 	}
+	 },
       
       // 切换指南章节展开/收起
       toggleSection(index) {
@@ -409,7 +469,10 @@
       _startLikeAnimation() {
         // 实现启动动画的逻辑
       }
-    }
+    },
+	created() {
+		this.getUserRole()
+	}
   }
 </script>
 

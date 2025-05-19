@@ -56,6 +56,14 @@
 					<text class="detail-item-label">申请人:</text>
 					<text class="detail-item-value">{{ currentItem.name }}</text>
 				</view>
+				<view class="detail-item">
+					<text class="detail-item-label">申请人户籍地:</text>
+					<text class="detail-item-value">{{ formatDisasterType(currentItem.address) }}</text>
+				</view>
+				<view class="detail-item">
+					<text class="detail-item-label">申请人身份证号:</text>
+					<text class="detail-item-value">{{ formatDisasterType(currentItem.cardNo) }}</text>
+				</view>
 				
 				<view class="detail-item">
 					<text class="detail-item-label">灾害类型:</text>
@@ -102,6 +110,7 @@
 </template>
 
 <script>
+	import { baseUrl } from "@/utils/apiconfig.js";
 	export default {
 		data() {
 			return {
@@ -142,16 +151,13 @@
 				this.loading = true;
 				
 				return new Promise((resolve, reject) => {
-					// 获取API地址
-					const baseUrl = uni.getStorageSync('baseUrl') || 'http://localhost:8083';
-					
 					// 构建请求参数 - 只获取审批通过的申请
 					const requestData = {
 						status: 3 // 审批通过的状态码，根据实际情况调整
 					};
 					
 					uni.request({
-						url: `${baseUrl}/wxapi/shebao/list`,
+						url: `${baseUrl}shebao/list`,
 						method: 'POST',
 						data: requestData,
 						header: {
@@ -164,7 +170,7 @@
 							if (res.statusCode === 200 && res.data.code === 200) {
 								// 处理返回的数据
 								let applications = [];
-								
+								console.log(res.data)
 								// 兼容多种数据结构
 								if (res.data.data) {
 									if (Array.isArray(res.data.data)) {
@@ -208,6 +214,7 @@
 			
 			// 显示详情
 			showDetail(item) {
+				console.log(item, "item")
 				this.currentItem = {...item};
 				this.showDetailModal = true;
 			},
@@ -216,6 +223,23 @@
 			closeDetail() {
 				this.showDetailModal = false;
 			},
+			
+			//
+			desensitizeIDCard(idCard) {
+			  if (!idCard || idCard.length < 6) {
+			    return '—';
+			  }
+			
+			  // 中国大陆的身份证号码长度为18位
+			  const idLength = idCard.length;
+			  // 保留前6位和后4位，中间替换为星号
+			  const prefix = idCard.substr(0, 4);
+			  const suffix = idCard.substr(idLength - 4);
+			  const middle = '*'.repeat(idLength - 8);
+			
+			  return prefix + middle + suffix;
+			},
+			
 			
 			// 格式化灾害类型
 			formatDisasterType(type) {
@@ -267,6 +291,8 @@
 						requestAmount: item.requestAmount || 0,
 						approvedAmount: item.approvedAmount || item.requestAmount || 0,
 						status: item.status,
+						address: item.address,
+						cardNo: this.desensitizeIDCard(item.cardNo),
 						createTime: item.createTime,
 						approveTime: item.approveTime || item.updateTime,
 						approveRemark: item.approveRemark || item.remark || '已通过审批'
@@ -491,7 +517,7 @@
 	}
 	
 	.detail-item-label {
-		width: 180rpx;
+		width: 200rpx;
 		font-size: 28rpx;
 		color: #999;
 	}

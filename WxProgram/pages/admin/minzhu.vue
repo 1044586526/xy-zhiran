@@ -100,13 +100,12 @@
 				<!-- 申请人信息 -->
 				<view class="applicant-summary">
 					<view class="applicant-avatar">
-						<text>{{ currentApplication.name ? currentApplication.name.substring(0, 1) : '?' }}</text>
+						<text>{{ currentApplication.name  }}</text>
 					</view>
 					<view class="applicant-info">
-						<text class="applicant-name">{{ currentApplication.name || '暂无' }}</text>
 						<text class="applicant-details">
-							{{ formatDisasterType(currentApplication.disasterType) }} | 
-							损失: {{ currentApplication.estimatedLoss || 0 }}元
+							{{ formatDisasterType(currentApplication.disasterType) }} | 损失: {{ currentApplication.estimatedLoss || 0 }}元
+							
 						</text>
 					</view>
 				</view>
@@ -213,20 +212,21 @@
 				<view class="modal-btn cancel-btn" @tap="cancelEvaluation">
 					<text>取消</text>
 				</view>
-				<view class="modal-btn confirm-btn" :class="{ disabled: !isEvaluationValid() }" @tap="submitEvaluation">
+				<view class="modal-btn confirm-btn" :class="{ disabled: !isEvaluationValid() }" @tap="submitEvaluation" v-if="!hasEvaluatedValue">
 					<text>提交评议</text>
 				</view>
 			</view>
 		</view>
 		
 		<!-- 注意：在这里可以检查并直接调试用户角色 -->
-		<view class="debug-info" v-if="process.env.NODE_ENV === 'development'" @tap="forceEvaluatorRole">
+		<!-- <view class="debug-info" v-if="process.env.NODE_ENV === 'development'" @tap="forceEvaluatorRole">
 			<text>调试信息: 角色{{ userRole }}({{ isEvaluator ? '有评议权限' : '无评议权限' }})</text>
-		</view>
+		</view> -->
 	</view>
 </template>
 
 <script>
+	import { baseUrl } from "@/utils/apiconfig.js";
 	export default {
 		data() {
 			return {
@@ -237,7 +237,7 @@
 				userName: '',
 				evaluatorId: '',
 				userRole: 'user', // 添加用户角色字段
-				
+				hasEvaluatedValue: false,
 				// 过滤选项
 				filterTabs: [
 					{ label: '全部申请', value: 'all' },
@@ -453,13 +453,12 @@
 				
 				// 如果不是评议员，可以尝试从API获取角色
 				try {
-					const baseUrl = uni.getStorageSync('baseUrl') || 'http://localhost:8083';
 					if (!baseUrl || !this.userId) {
 						return;
 					}
 					
 					uni.request({
-						url: `${baseUrl}/wxapi/shebao/evaluation/check-role`,
+						url: `${baseUrl}shebao/evaluation/check-role`,
 						method: 'GET',
 						header: {
 							'Authorization': uni.getStorageSync('token') || ''
@@ -536,12 +535,11 @@
 					try {
 						// 从本地存储获取API基地址
 						// 增加baseUrl定义（从本地存储获取）
-const baseUrl = uni.getStorageSync('baseUrl') || 'http://localhost:8083';
-if (!baseUrl) {
-  console.error('baseUrl未配置');
-  uni.showToast({ title: '服务器配置错误', icon: 'none' });
-  return;
-}
+					if (!baseUrl) {
+					  console.error('baseUrl未配置');
+					  uni.showToast({ title: '服务器配置错误', icon: 'none' });
+					  return;
+					}
 						if (!baseUrl) {
 							uni.hideLoading();
 							// uni.showToast({
@@ -566,7 +564,7 @@ if (!baseUrl) {
 						
 						// 发送请求获取申请列表
 						uni.request({
-							url: `${baseUrl}/wxapi/shebao/list`,
+							url: `${baseUrl}shebao/list`,
 							method: 'POST',
 							data: requestData,
 							header: {
@@ -727,20 +725,20 @@ if (!baseUrl) {
 				}
 				
 				// 增加baseUrl定义（从本地存储获取）
-const baseUrl = uni.getStorageSync('baseUrl') || 'http://localhost:8083';
-if (!baseUrl) {
-  console.error('baseUrl未配置');
-  uni.showToast({ title: '服务器配置错误', icon: 'none' });
-  return;
-}
-				if (!baseUrl) {
+
+					if (!baseUrl) {
+					  console.error('baseUrl未配置');
+					  uni.showToast({ title: '服务器配置错误', icon: 'none' });
+					  return;
+					}
+					if (!baseUrl) {
 					// 使用模拟数据
 					this.evaluationHistory = this.generateMockEvaluationHistory();
 					return;
 				}
 				
 				uni.request({
-					url: `${baseUrl}/wxapi/shebao/evaluation/history/${applicationId}`,
+					url: `${baseUrl}shebao/evaluation/history/${applicationId}`,
 					method: 'GET',
 					header: {
 						'Authorization': uni.getStorageSync('token') || ''
@@ -758,7 +756,7 @@ if (!baseUrl) {
 									const userEvaluation = res.data.data.find(
 										item => item.evaluatorId == (this.evaluatorId || this.userId)
 									);
-									
+									console.log(userEvaluation)
 									if (userEvaluation) {
 										// 更新当前申请的评议状态
 										this.updateApplicationEvaluationStatus(applicationId, true);
@@ -785,9 +783,11 @@ if (!baseUrl) {
 			
 			// 更新申请的评议状态
 			updateApplicationEvaluationStatus(applicationId, hasEvaluated) {
+				this.hasEvaluatedValue = false
 				const index = this.applications.findIndex(item => item.id === applicationId);
 				if (index !== -1) {
 					this.applications[index].hasEvaluated = hasEvaluated;
+					this.hasEvaluatedValue = true
 				}
 			},
 			
@@ -863,12 +863,11 @@ if (!baseUrl) {
 					});
 					
 					// 增加baseUrl定义（从本地存储获取）
-const baseUrl = uni.getStorageSync('baseUrl') || 'http://localhost:8083';
-if (!baseUrl) {
-  console.error('baseUrl未配置');
-  uni.showToast({ title: '服务器配置错误', icon: 'none' });
-  return;
-}
+					if (!baseUrl) {
+					  console.error('baseUrl未配置');
+					  uni.showToast({ title: '服务器配置错误', icon: 'none' });
+					  return;
+					}
 					if (!baseUrl) {
 						uni.hideLoading();
 						// uni.showToast({
@@ -893,7 +892,7 @@ if (!baseUrl) {
 					
 					// 发送评议请求
 					uni.request({
-						url: `${baseUrl}/wxapi/shebao/evaluation/add`,
+						url: `${baseUrl}shebao/evaluation/add`,
 						method: 'POST',
 						data: submitData,
 						header: {
@@ -1198,7 +1197,6 @@ if (!baseUrl) {
 					return;
 				}
 				
-				const baseUrl = uni.getStorageSync('baseUrl') || 'http://localhost:8083';
 				const evaluatorId = this.evaluatorId || this.userId;
 				
 				if (!baseUrl || !evaluatorId) {
@@ -1207,7 +1205,7 @@ if (!baseUrl) {
 				
 				// 获取用户已评议的申请列表
 				uni.request({
-					url: `${baseUrl}/wxapi/shebao/evaluation/user-evaluated/${evaluatorId}`,
+					url: `${baseUrl}shebao/evaluation/user-evaluated/${evaluatorId}`,
 					method: 'GET',
 					header: {
 						'Authorization': uni.getStorageSync('token') || ''

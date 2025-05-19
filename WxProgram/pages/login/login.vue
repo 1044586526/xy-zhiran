@@ -161,12 +161,13 @@ import {
     removeUserInfo,
     removeToken
 } from '@/utils/auth';
+import { getVerify, fetchLogin, checkVerify } from "@/utils/apiconfig.js";
 
 	export default {
 		data() {
 			return {
                 varId: 1,
-                picture: "http://localhost:8083/wxapi/getVerify",
+                picture: getVerify,
                 msg: null,
                 loadingCaptcha: false,
                 loading: false,
@@ -240,7 +241,6 @@ import {
             
             // 返回按钮处理
             goBack() {
-				console.log(11111)
                 uni.navigateTo({
                     url: '/pages/login/TotalLogin'
                 })
@@ -295,7 +295,7 @@ import {
                 
                 // 验证通过，验证验证码
                 uni.request({
-                    url: 'http://localhost:8083/wxapi/checkVerify?vaibleStr=' + this.formData.Verification,
+                    url: checkVerify + this.formData.Verification,
                     method: 'GET',
                     success: (res) => {
                         console.log("验证码验证结果: ", res.data);
@@ -321,7 +321,7 @@ import {
             // 提交登录请求
             submitLogin() {
                 uni.request({
-                    url: "http://localhost:8083/wxapi/login",
+                    url: fetchLogin,
                     method: 'POST',
                     data: {
                         idCard: this.formData.idNumber,
@@ -384,11 +384,12 @@ import {
                                     uni.reLaunch({
                                         url: "/pages/me/me"
                                     });
-                                } else if(isReviewer) {
-									uni.reLaunch({
-									    url: "/pages/admin/shenpiList"
-									});
-								}
+                                } 
+								// else if(isReviewer) {
+								// 	uni.reLaunch({
+								// 	    url: "/pages/admin/shenpiList"
+								// 	});
+								// }
 								else {
                                     console.log("普通用户角色：", roleStr, "跳转到首页");
                                     // 普通用户跳转到首页

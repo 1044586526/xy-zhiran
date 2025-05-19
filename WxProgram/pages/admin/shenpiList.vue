@@ -14,7 +14,7 @@
 			</view>
 			
 			<!-- 过滤选项 -->
-			<view class="filter-tabs">
+			<scroll-view class="filter-tabs" scroll-x>
 				<view class="filter-tab" 
 					v-for="(tab, index) in filterTabs" 
 					:key="index"
@@ -23,7 +23,7 @@
 					<text>{{ tab.label }}</text>
 					<text class="count" v-if="tab.count">{{ tab.count }}</text>
 				</view>
-			</view>
+			</scroll-view>
 		</view>
 		
 		<!-- 搜索框 -->
@@ -98,6 +98,7 @@
 </template>
 
 <script>
+import { baseUrl } from "@/utils/apiconfig.js";
 	export default {
 		data() {
 			return {
@@ -109,7 +110,7 @@
 					{ label: '已驳回', value: 'rejected', count: 0 },
 					{ label: '已发放', value: 'issued', count: 0 }
 				],
-				currentFilter: 'pending', // 默认显示待审批
+				currentFilter: 'all', // 默认显示待审批
 				
 				// 搜索关键词
 				searchKeyword: '',
@@ -161,7 +162,6 @@
 				});
 				
 				// 从本地存储获取API基地址
-				const baseUrl = uni.getStorageSync('baseUrl') || '';
 				if (!baseUrl) {
 					uni.hideLoading();
 					// 使用模拟数据
@@ -184,7 +184,7 @@
 				// 发送请求获取申请列表
 				return new Promise((resolve, reject) => {
 					uni.request({
-						url: `${baseUrl}/wxapi/shebao/list`,
+						url: `${baseUrl}shebao/list`,
 						method: 'POST', // 使用POST方法
 						data: requestData,
 						header: {
@@ -205,15 +205,15 @@
 								return;
 							}
 							
-							console.log('获取申请列表响应:', res.data);
 							
 							// 检查响应数据 - 适应新的接口格式
 							if (res.data && res.data.code === 200 && res.data.data) {
 								// 处理返回的数据 - 使用data字段直接获取列表
 								const applications = res.data.data;
+								console.log(applications)
 								this.applications = this.formatApplicationData(applications);
 								this.total = applications.length;
-								this.calculateStatistics();
+								// this.calculateStatistics();
 							} else {
 								uni.showToast({
 									title: res.data.msg || '获取申请列表失败',
@@ -241,6 +241,49 @@
 				});
 			},
 			
+			
+			loadGetNum() {
+				uni.request({
+					url: `${baseUrl}list/survey `,
+					method: 'POST', // 使用POST方法
+					header: {
+						'content-type': 'application/json', // 确保设置JSON内容类型
+						'Authorization': uni.getStorageSync('token') || ''
+					},
+					success: (res) => {
+						uni.hideLoading();
+						
+						// 检查响应状态
+						if (res.statusCode !== 200) {
+							uni.showToast({
+								title: `请求失败: ${res.statusCode}`,
+								icon: 'none'
+							});
+							return;
+						}
+						const data = res.data
+						this.totalApplications = data.all
+						this.pendingCount  = data.pending
+						this.approvedCount  = data.success
+						this.rejectedCount  = data.fault
+						this.issuedCount  = data.issued
+						this.updateFilterCounts();
+						
+					},
+					fail: (err) => {
+						uni.hideLoading();
+						uni.showToast({
+							title: '网络请求失败',
+							icon: 'none'
+						});
+						console.error('请求失败:', err);
+						
+						// 使用模拟数据
+						this.loadMockData();
+						resolve();
+					}
+				});
+			},
 			// 设置查询参数
 			setQueryParams() {
 				// 重置查询参数
@@ -249,10 +292,10 @@
 				// 根据过滤条件设置状态参数
 				if (this.currentFilter !== 'all') {
 					const statusMap = {
-						'pending': 1,
-						'approved': 3,
+						'pending': 0,
+						'approved': 1,
 						'rejected': 2,
-						'issued': 4
+						'issued': 3
 					};
 					
 					this.queryParams.status = statusMap[this.currentFilter];
@@ -319,7 +362,7 @@
 				});
 				
 				// 更新过滤选项中的数量
-				this.updateFilterCounts();
+				// this.updateFilterCounts();
 			},
 			
 			// 更新过滤选项中的数量
@@ -356,7 +399,6 @@
 					return;
 				}
 				
-				console.log('查看申请详情，ID:', id);
 				
 				// 导航到详情页，并传递ID参数
 				uni.navigateTo({
@@ -437,8 +479,12 @@
 				this.total = mockData.length;
 				this.calculateStatistics();
 			}
+		},
+		created() {
+			this.loadGetNum()
 		}
 	}
+	
 </script>
 
 <style lang="scss">
@@ -457,6 +503,7 @@
 		padding: 40rpx 30rpx 20rpx;
 		color: #FFFFFF;
 		box-shadow: 0 4rpx 20rpx rgba(24, 144, 255, 0.2);
+		width: 100%;
 	}
 
 	.header {
@@ -493,9 +540,8 @@
 	.filter-tabs {
 		display: flex;
 		overflow-x: auto;
+		width: 100%;
 		white-space: nowrap;
-		margin: 0 -30rpx;
-		padding: 0 30rpx 20rpx;
 	}
 
 	.filter-tab {

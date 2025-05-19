@@ -66,15 +66,7 @@
 					<text class="function-desc">查看已公示的救助信息</text>
 				</view>
 			</view>
-			<view class="function-item data" @click="goToDataQuery">
-				<view class="function-icon-box">
-					<text class="cuIcon-list"></text>
-				</view>
-				<view class="function-info">
-					<text class="function-title">数据统计</text>
-					<text class="function-desc">查看审批通过的名单和总金额</text>
-				</view>
-			</view>
+			
 		</view>
 		
 		<!-- 灾情概览 -->

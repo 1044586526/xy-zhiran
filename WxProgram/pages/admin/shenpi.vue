@@ -52,9 +52,9 @@
 			</view>
 			
 			<view class="applicant-summary">
-				<view class="applicant-avatar">
+				<!-- <view class="applicant-avatar">
 					<text>{{ applicationData.name ? applicationData.name.substring(0, 1) : '?' }}</text>
-				</view>
+				</view> -->
 				<view class="applicant-info">
 					<text class="applicant-name">{{ applicationData.name || '暂无' }}</text>
 					<text class="applicant-details">{{ applicationData.phone || '暂无电话' }} | {{ formatDate(applicationData.createTime) }}</text>
@@ -64,7 +64,7 @@
 			<view class="info-grid">
 				<view class="info-item">
 					<text class="label">身份证号</text>
-					<text class="value">{{ applicationData.idCard || '暂无' }}</text>
+					<text class="value">{{ desensitizeIDCard(applicationData.idCard) || '暂无' }}</text>
 				</view>
 				<view class="info-item">
 					<text class="label">家庭人口</text>
@@ -246,7 +246,7 @@
 		</view>
 		
 		<!-- 确认弹窗 -->
-		<view class="modal-overlay" v-if="showConfirm" @click="cancelApproval"></view>
+		<view class="modal-overlay" v-if="showConfirm" ></view>
 		<view class="confirm-modal" v-if="showConfirm">
 			<view class="modal-header">
 				<text class="modal-title">确认{{ approvalAction === 'approve' ? '通过' : '驳回' }}</text>
@@ -275,6 +275,7 @@
 </template>
 
 <script>
+		import { baseUrl } from "@/utils/apiconfig.js";
 	export default {
 		data() {
 			return {
@@ -352,6 +353,21 @@
 						urls: evidenceFiles.map(item => item.url).filter(Boolean)
 					});
 				}
+			},
+			
+			desensitizeIDCard(idCard) {
+			  if (!idCard || idCard.length < 6) {
+			    return '暂无';
+			  }
+			
+			  // 中国大陆的身份证号码长度为18位
+			  const idLength = idCard.length;
+			  // 保留前6位和后4位，中间替换为星号
+			  const prefix = idCard.substr(0, 4);
+			  const suffix = idCard.substr(idLength - 4);
+			  const middle = '*'.repeat(idLength - 8);
+			
+			  return prefix + middle + suffix;
 			},
 			
 			// 加载申请数据
@@ -475,6 +491,7 @@
 			
 			// 处理审批操作
 			handleApproval(action) {
+				console.log(111)
 				this.approvalAction = action;
 				this.showConfirm = true;
 			},
@@ -498,7 +515,6 @@
 					title: '提交中...'
 				});
 				
-				const baseUrl = uni.getStorageSync('baseUrl') || '';
 				if (!baseUrl) {
 					uni.hideLoading();
 					// uni.showToast({
@@ -511,15 +527,16 @@
 				// 根据具体需求准备提交数据
 				const approvalData = {
 					id: this.applicationId,
-					status: this.approvalAction === 'approve' ? 3 : 2, // 3是审核通过，2是驳回
+					status: this.approvalAction === 'approve' ? 1 : 2, // 3是审核通过，2是驳回
 					auditRemark: this.approvalOpinion || (this.approvalAction === 'approve' ? '同意申请' : '申请不符合条件')
 				};
 				
 				console.log('提交审批数据:', approvalData);
 				
+				
 				// 发送审批请求
 				uni.request({
-					url: `${baseUrl}/wxapi/shebao/approve`,
+					url: `${baseUrl}list/update`,
 					method: 'POST',
 					data: approvalData,
 					header: {
@@ -1106,5 +1123,94 @@
 		text-align: center;
 		color: #909399;
 		font-size: 26rpx;
+	}
+	
+	/* 弹窗样式 */
+	.modal-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 999;
+	}
+	
+.confirm-modal {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 650rpx;
+		background-color: #FFFFFF;
+		border-radius: 16rpx;
+		z-index: 1000;
+		box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.1);
+		.modal-header {
+			padding: 30rpx;
+			border-bottom: 1rpx solid #F0F0F0;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.modal-title {
+			font-size: 30rpx;
+			font-weight: bold;
+			color: #333333;
+		}
+		
+		.modal-close {
+			font-size: 40rpx;
+			color: #999999;
+			line-height: 1;
+		}
+		
+		.modal-body {
+			padding: 30rpx;
+		}
+		.modal-footer {
+			padding: 20rpx 30rpx 30rpx;
+			display: flex;
+			justify-content: flex-end;
+			border-top: 1rpx solid #F0F0F0;
+		}
+		.modal-btn {
+			padding: 16rpx 30rpx;
+			border-radius: 8rpx;
+			font-size: 26rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-left: 20rpx;
+		}
+		
+		.cancel-btn {
+			border: 1rpx solid #E8E8E8;
+			color: #666666;
+		}
+		
+		.confirm-btn {
+			background-color: #1890FF;
+			color: #FFFFFF;
+		}
+		
+		/* 删除确认弹窗 */
+		.delete-confirm-modal {
+			width: 560rpx;
+		}
+		
+		.confirm-text {
+			font-size: 28rpx;
+			color: #333333;
+			margin-bottom: 16rpx;
+			display: block;
+		}
+		
+		.confirm-warning {
+			font-size: 24rpx;
+			color: #FF4D4F;
+		}
+		
 	}
 </style>

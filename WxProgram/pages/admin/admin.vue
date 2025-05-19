@@ -220,15 +220,16 @@
 </template>
 
 <script>
+	import { baseUrl } from "@/utils/apiconfig.js";
 	export default {
 		data() {
 			return {
 				userName: '', // 管理员姓名，从用户信息中获取
 				stats: {
-					total: 125,
-					pending: 8,
-					approved: 98,
-					rejected: 19,
+					total: 10,
+					pending: 2,
+					approved: 2,
+					rejected: 2,
 					today: 5,
 					reviewPending: 3
 				},
@@ -299,7 +300,7 @@
 					'display': '/pages/admin/yangguang',
 					'records': '/pages/disaster/query',
 					'users': '/pages/admin/user',
-					'stats': '/pages/admin/data-statistics'
+					'stats': '/pages/admin/dataStat'
 				};
 				
 				if (pageMap[target]) {
@@ -359,6 +360,49 @@
 				}, 800);
 			},
 			
+			loadGetNum() {
+				uni.request({
+					url: `${baseUrl}list/survey `,
+					method: 'POST', // 使用POST方法
+					header: {
+						'content-type': 'application/json', // 确保设置JSON内容类型
+						'Authorization': uni.getStorageSync('token') || ''
+					},
+					success: (res) => {
+						uni.hideLoading();
+						
+						// 检查响应状态
+						if (res.statusCode !== 200) {
+							uni.showToast({
+								title: `请求失败: ${res.statusCode}`,
+								icon: 'none'
+							});
+							return;
+						}
+						const data = res.data
+						this.stats.total = data.all
+						this.stats.pending = data.pending
+						this.stats.rejected = data.fault
+						this.stats.approved = data.success
+						this.totalApplications = data.all
+						this.stats.reviewPending = data.comment
+						
+					},
+					fail: (err) => {
+						uni.hideLoading();
+						uni.showToast({
+							title: '网络请求失败',
+							icon: 'none'
+						});
+						console.error('请求失败:', err);
+						
+						// 使用模拟数据
+						this.loadMockData();
+						resolve();
+					}
+				});
+			},
+			
 			// 刷新所有数据
 			refreshData() {
 				// uni.showLoading({
@@ -388,6 +432,9 @@
 					}
 				});
 			}
+		},
+		created() {
+			this.loadGetNum()
 		}
 	}
 </script>
