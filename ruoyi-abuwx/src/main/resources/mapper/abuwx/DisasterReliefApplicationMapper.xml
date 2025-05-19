@@ -196,7 +196,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="listDis"  resultMap="DisasterReliefApplicationResult">
-        SELECT * FROM disaster_relief_application WHERE status = 1;
+        SELECT * FROM disaster_relief_application WHERE status = 3;
     </select>
 
 

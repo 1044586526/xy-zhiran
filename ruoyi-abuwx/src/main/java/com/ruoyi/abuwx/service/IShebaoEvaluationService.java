@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ruoyi.abuwx.domain.ShebaoEvaluation;
+import com.ruoyi.common.core.domain.AjaxResult;
 
 /**
  * 社保民主评议记录Service接口
@@ -35,7 +36,7 @@ public interface IShebaoEvaluationService
      * @param shebaoEvaluation 社保民主评议记录
      * @return 结果
      */
-    public int insertShebaoEvaluation(ShebaoEvaluation shebaoEvaluation);
+    public AjaxResult insertShebaoEvaluation(ShebaoEvaluation shebaoEvaluation);
 
     /**
      * 修改社保民主评议记录

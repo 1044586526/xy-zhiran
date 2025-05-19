@@ -2,6 +2,8 @@ package com.ruoyi.abuwx.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -130,6 +132,16 @@ public class DisasterReliefApplication extends BaseEntity
     @Excel(name = "银行卡号")
     private String cardNo;
 
+    @TableField(exist = false)
+    private Integer userId;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public String getCardNo() {
         return cardNo;

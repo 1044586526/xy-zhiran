@@ -77,7 +77,7 @@ public class ShebaoEvaluationController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody ShebaoEvaluation shebaoEvaluation)
     {
-        return toAjax(shebaoEvaluationService.insertShebaoEvaluation(shebaoEvaluation));
+        return shebaoEvaluationService.insertShebaoEvaluation(shebaoEvaluation);
     }
 
     /**

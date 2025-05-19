@@ -51,7 +51,7 @@ public class WxshebaopingyiController {
     @PostMapping("/add")
     public AjaxResult add(@RequestBody ShebaoEvaluation shebaoEvaluation) {
         shebaoEvaluation.setEvaluationTime(new Date());
-        return AjaxResult.success(shebaoEvaluationService.insertShebaoEvaluation(shebaoEvaluation));
+        return shebaoEvaluationService.insertShebaoEvaluation(shebaoEvaluation);
     }
 
     /**

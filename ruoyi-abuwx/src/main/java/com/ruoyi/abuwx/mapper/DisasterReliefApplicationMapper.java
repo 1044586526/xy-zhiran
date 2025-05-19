@@ -55,7 +55,6 @@ public interface DisasterReliefApplicationMapper  extends BaseMapper<DisasterRel
      */
     public int deleteDisasterReliefApplicationById(Long id);
 
-    public int deleteDisasterReliefApplicationByIdCard(Long id);
 
     /**
      * 批量删除灾害救助申报

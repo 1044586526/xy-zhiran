@@ -1,8 +1,11 @@
 package com.ruoyi.abuwx.service;
 
 import java.util.List;
+import java.util.Map;
+
 import com.ruoyi.abuwx.domain.DisasterReliefApplication;
 import com.ruoyi.abuwx.dto.ResultDTO;
+import com.ruoyi.common.core.domain.AjaxResult;
 
 /**
  * 灾害救助申报Service接口
@@ -29,6 +32,10 @@ public interface IDisasterReliefApplicationService
      */
     public List<DisasterReliefApplication> selectDisasterReliefApplicationList(DisasterReliefApplication disasterReliefApplication);
 
+    public List<DisasterReliefApplication> selectDisasterReliefComment(DisasterReliefApplication disasterReliefApplication);
+
+
+
     /**
      * 新增灾害救助申报
      * 
@@ -44,6 +51,8 @@ public interface IDisasterReliefApplicationService
      * @return 结果
      */
     public int updateDisasterReliefApplication(DisasterReliefApplication disasterReliefApplication);
+
+    public AjaxResult updateDisasterReliefApplicationRt(DisasterReliefApplication disasterReliefApplication);
 
     /**
      * 批量删除灾害救助申报
@@ -68,5 +77,7 @@ public interface IDisasterReliefApplicationService
     DisasterReliefApplication selectDisasterReliefApplicationByReportId(String reportId);
 
     ResultDTO count();
+
+    Map<String,Integer> survey();
 
 }

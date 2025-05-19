@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,10 +59,20 @@ public class ShebaoEvaluationServiceImpl implements IShebaoEvaluationService
      * @return 结果
      */
     @Override
-    public int insertShebaoEvaluation(ShebaoEvaluation shebaoEvaluation)
+    public AjaxResult insertShebaoEvaluation(ShebaoEvaluation shebaoEvaluation)
     {
-        shebaoEvaluation.setCreateTime(DateUtils.getNowDate());
-        return shebaoEvaluationMapper.insertShebaoEvaluation(shebaoEvaluation);
+        // 已经评议过不在评议
+        ShebaoEvaluation dto = new ShebaoEvaluation();
+        dto.setApplicationId(shebaoEvaluation.getApplicationId());
+        dto.setEvaluatorId(shebaoEvaluation.getEvaluatorId());
+        dto.setStatus(1);
+        List<ShebaoEvaluation> shebaoEvaluations = shebaoEvaluationMapper.selectShebaoEvaluationList(dto);
+        if (CollectionUtils.isNotEmpty(shebaoEvaluations)){
+            return AjaxResult.error("您已评议过,不能再次评议");
+        }else{
+            shebaoEvaluation.setCreateTime(DateUtils.getNowDate());
+            return AjaxResult.success(shebaoEvaluationMapper.insertShebaoEvaluation(shebaoEvaluation));
+        }
     }
 
     /**

@@ -35,6 +35,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userrole != null  and userrole != ''"> and user_role = #{userrole}</if>
         </where>
     </select>
+
+
+
     
     <select id="selectUserInfoById" parameterType="Long" resultMap="UserInfoResult">
         <include refid="selectUserInfoVo"/>

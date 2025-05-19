@@ -175,23 +175,23 @@
 				</view>
 			</view>
 		</view>
-		
+
 		<!-- 审批意见 -->
 		<view class="info-card approval-card">
 			<view class="card-header">
 				<text class="card-title">审批意见</text>
 			</view>
-			
+
 			<view class="opinion-section">
 				<text class="approval-guide" v-if="applicationData.status <= 1">请详细填写审批意见，为后续决策提供依据</text>
-				
-				<textarea 
-					class="opinion-input" 
-					v-model="approvalOpinion" 
-					placeholder="请输入审批意见..." 
-					:disabled="applicationData.status > 1"
+
+				<textarea
+						class="opinion-input"
+						v-model="approvalOpinion"
+						placeholder="请输入审批意见..."
+						:disabled="applicationData.status > 1"
 				></textarea>
-				
+
 				<!-- 快速填写选项 -->
 				<view class="quick-options" v-if="applicationData.status <= 1">
 					<text class="quick-option-label">快速填写:</text>
@@ -210,11 +210,11 @@
 						</view>
 					</view>
 				</view>
-				
+
 				<!-- 历史审批意见 -->
 				<view class="history-opinions" v-if="approvalHistory && approvalHistory.length > 0">
 					<text class="section-title">历史审批记录</text>
-					
+
 					<view class="history-item" v-for="(item, index) in approvalHistory" :key="index">
 						<view class="history-header">
 							<text class="reviewer">{{ item.reviewer || '未知审批人' }}</text>
@@ -228,7 +228,7 @@
 				</view>
 			</view>
 		</view>
-		
+
 		<!-- 底部操作栏 -->
 		<view class="action-bar" v-if="applicationData.status <= 1">
 			<view class="action-btn reject-btn" @click="handleApproval('reject')">
@@ -238,30 +238,30 @@
 				<text>审批通过</text>
 			</view>
 		</view>
-		
+
 		<!-- 已完成审批提示 -->
 		<view class="completed-tip" v-else>
 			<text>该申请已{{ applicationData.status === 2 ? '驳回' : '审批通过' }}，无需进一步操作</text>
 			<view class="return-btn" @click="goBack">返回列表</view>
 		</view>
-		
+
 		<!-- 确认弹窗 -->
 		<view class="modal-overlay" v-if="showConfirm" ></view>
 		<view class="confirm-modal" v-if="showConfirm">
 			<view class="modal-header">
 				<text class="modal-title">确认{{ approvalAction === 'approve' ? '通过' : '驳回' }}</text>
 			</view>
-			
+
 			<view class="modal-body">
 				<text class="confirm-text">您确定要{{ approvalAction === 'approve' ? '通过' : '驳回' }}此申请吗？</text>
 				<text class="confirm-warning" v-if="!approvalOpinion">请注意：您尚未填写审批意见。</text>
-				
+
 				<view class="opinion-preview" v-if="approvalOpinion">
 					<text class="preview-label">审批意见预览：</text>
 					<text class="preview-content">{{ approvalOpinion }}</text>
 				</view>
 			</view>
-			
+
 			<view class="modal-footer">
 				<view class="modal-btn cancel-btn" @click="cancelApproval">
 					<text>取消</text>
@@ -275,49 +275,49 @@
 </template>
 
 <script>
-		import { baseUrl } from "@/utils/apiconfig.js";
-	export default {
-		data() {
-			return {
-				// 申请数据
-				applicationData: {
-					id: null,
-					reportId: '',
-					name: '',
-					idCard: '',
-					phone: '',
-					address: '',
-					familySize: 0,
-					disasterType: '',
-					disasterDate: '',
-					disasterDesc: '',
-					lossTypes: '',
-					estimatedLoss: 0,
-					lossDesc: '',
-					reliefTypes: '',
-					otherNeeds: '',
-					materialNeeds: '',
-					evidenceFiles: '',
-					evidenceDesc: '',
-					status: 0,
-					createTime: null
-				},
-				// 审批意见
-				approvalOpinion: '',
-				// 审批历史
-				approvalHistory: [],
-				// 确认弹窗
-				showConfirm: false,
-				// 当前审批动作
-				approvalAction: 'approve', // 'approve' 或 'reject'
-				// 申请ID
-				applicationId: null
-			}
-		},
-		computed: {
-			// 判断是否有证据材料
-			hasEvidence() {
-				return this.applicationData.evidenceFiles && 
+import { baseUrl } from "@/utils/apiconfig.js";
+export default {
+	data() {
+		return {
+			// 申请数据
+			applicationData: {
+				id: null,
+				reportId: '',
+				name: '',
+				idCard: '',
+				phone: '',
+				address: '',
+				familySize: 0,
+				disasterType: '',
+				disasterDate: '',
+				disasterDesc: '',
+				lossTypes: '',
+				estimatedLoss: 0,
+				lossDesc: '',
+				reliefTypes: '',
+				otherNeeds: '',
+				materialNeeds: '',
+				evidenceFiles: '',
+				evidenceDesc: '',
+				status: 0,
+				createTime: null
+			},
+			// 审批意见
+			approvalOpinion: '',
+			// 审批历史
+			approvalHistory: [],
+			// 确认弹窗
+			showConfirm: false,
+			// 当前审批动作
+			approvalAction: 'approve', // 'approve' 或 'reject'
+			// 申请ID
+			applicationId: null
+		}
+	},
+	computed: {
+		// 判断是否有证据材料
+		hasEvidence() {
+			return this.applicationData.evidenceFiles &&
 					this.parseEvidenceFiles(this.applicationData.evidenceFiles).length > 0;
 			}
 		},
@@ -797,9 +797,9 @@
 		margin-bottom: 30rpx;
 	}
 
-	.title-section {
-		flex: 1;
-	}
+.title-section {
+	flex: 1;
+}
 
 	.page-title {
 		font-size: 40rpx;
@@ -809,19 +809,19 @@
 		display: block;
 	}
 
-	.subtitle {
-		font-size: 26rpx;
-		color: rgba(255, 255, 255, 0.8);
-	}
+.subtitle {
+	font-size: 26rpx;
+	color: rgba(255, 255, 255, 0.8);
+}
 
-	.status-indicator {
-		padding: 8rpx 20rpx;
-		border-radius: 20rpx;
-		font-size: 24rpx;
-		font-weight: bold;
-		background-color: rgba(255, 255, 255, 0.3);
-		color: #FFFFFF;
-	}
+.status-indicator {
+	padding: 8rpx 20rpx;
+	border-radius: 20rpx;
+	font-size: 24rpx;
+	font-weight: bold;
+	background-color: rgba(255, 255, 255, 0.3);
+	color: #FFFFFF;
+}
 
 	/* 审批进度条 */
 	.approval-progress {

@@ -5,13 +5,18 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.abuwx.domain.DisasterReliefApplication;
 import com.ruoyi.abuwx.dto.ResultDTO;
 import com.ruoyi.abuwx.service.IDisasterReliefApplicationService;
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * author：AbuCoder QQ:932696181
@@ -20,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/wxapi")
-public class disaster_reliefController {
+public class DisasterReliefController extends BaseController {
 
     @Autowired
     IDisasterReliefApplicationService iDisasterReliefApplicationService;
@@ -105,6 +110,13 @@ public class disaster_reliefController {
         List<DisasterReliefApplication>  bannerslist = iDisasterReliefApplicationService.selectDisasterReliefApplicationList(disasterReliefApplication);
         return AjaxResult.success(bannerslist);
     }
+
+
+    @PostMapping("/shebao/comment")
+    public AjaxResult comment(@RequestBody DisasterReliefApplication disasterReliefApplication){
+        List<DisasterReliefApplication>  bannerslist = iDisasterReliefApplicationService.selectDisasterReliefComment(disasterReliefApplication);
+        return AjaxResult.success(bannerslist);
+    }
     @GetMapping("/shebao/list/{id}")
     public AjaxResult listid(@PathVariable("id") Long id){
         DisasterReliefApplication  bannerslist = iDisasterReliefApplicationService.selectDisasterReliefApplicationById(id);
@@ -117,4 +129,23 @@ public class disaster_reliefController {
         return iDisasterReliefApplicationService.count();
     }
 
+
+    /**
+     * 修改灾害救助申报
+     */
+    @PostMapping("/list/update")
+    public AjaxResult edit(@RequestBody DisasterReliefApplication disasterReliefApplication)
+    {
+        return iDisasterReliefApplicationService.updateDisasterReliefApplicationRt(disasterReliefApplication);
+    }
+
+
+    /**
+     * 概述
+     */
+    @PostMapping("/list/survey")
+    public Map<String,Integer> survey()
+    {
+        return iDisasterReliefApplicationService.survey();
+    }
 }
