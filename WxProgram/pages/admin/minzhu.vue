@@ -166,7 +166,7 @@
 				<view class="modal-btn cancel-btn" @tap="cancelEvaluation">
 					<text>取消</text>
 				</view>
-				<view class="modal-btn confirm-btn" @tap="submitEvaluation" >
+				<view class="modal-btn confirm-btn" @tap="submitEvaluation" v-if="currentApplication.status !== 1">
 					<text>提交评议</text>
 				</view>
 			</view>
@@ -737,11 +737,10 @@
 			
 			// 更新申请的评议状态
 			updateApplicationEvaluationStatus(applicationId, hasEvaluated) {
-				this.hasEvaluatedValue = false
 				const index = this.applications.findIndex(item => item.id === applicationId);
+				console.log(index, "index")
 				if (index !== -1) {
 					this.applications[index].hasEvaluated = hasEvaluated;
-					this.hasEvaluatedValue = true
 				}
 			},
 			
@@ -1022,7 +1021,7 @@
 								disasterDate: item.disasterDate || '未知日期',
 								disasterDesc: item.disasterDesc || '无灾情描述',
 								estimatedLoss: item.estimatedLoss || 0,
-								status: item.status !== undefined ? item.status : 3,
+								status: item.status,
 								createTime: item.createTime,
 								evaluationCount: item.evaluationCount || 0,
 								averageScore: item.averageScore || 0,

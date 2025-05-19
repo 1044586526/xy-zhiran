@@ -523,10 +523,16 @@
 					// });
 					return;
 				}
-				
+				let userInfo = uni.getStorageSync('user_info');
+				if (Array.isArray(userInfo) && userInfo.length > 0) {
+					userInfo = userInfo[0];
+				} else if (!userInfo) {
+					userInfo = {};
+				}
 				// 根据具体需求准备提交数据
 				const approvalData = {
 					id: this.applicationId,
+					userId: userInfo.id,
 					status: this.approvalAction === 'approve' ? 1 : 2, // 3是审核通过，2是驳回
 					auditRemark: this.approvalOpinion || (this.approvalAction === 'approve' ? '同意申请' : '申请不符合条件')
 				};
