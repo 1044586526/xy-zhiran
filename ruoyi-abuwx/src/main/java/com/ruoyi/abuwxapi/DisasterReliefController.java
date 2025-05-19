@@ -148,4 +148,23 @@ public class DisasterReliefController extends BaseController {
     {
         return iDisasterReliefApplicationService.survey();
     }
+
+
+
+    @PostMapping("/shebao/commentSet")
+    public AjaxResult commentSet(@RequestBody DisasterReliefApplication disasterReliefApplication){
+        List<DisasterReliefApplication>  bannerslist = iDisasterReliefApplicationService.commentSet(disasterReliefApplication);
+        return AjaxResult.success(bannerslist);
+    }
+
+
+    /**
+     * 驳回
+     */
+    @PostMapping("/list/cancel")
+    public AjaxResult cancel(@RequestBody DisasterReliefApplication disasterReliefApplication)
+    {
+        return iDisasterReliefApplicationService.cancel(disasterReliefApplication);
+    }
+
 }

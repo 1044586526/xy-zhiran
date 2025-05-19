@@ -34,6 +34,10 @@ public interface IDisasterReliefApplicationService
 
     public List<DisasterReliefApplication> selectDisasterReliefComment(DisasterReliefApplication disasterReliefApplication);
 
+    public List<DisasterReliefApplication> commentSet(DisasterReliefApplication disasterReliefApplication);
+
+
+
 
 
     /**
@@ -53,6 +57,8 @@ public interface IDisasterReliefApplicationService
     public int updateDisasterReliefApplication(DisasterReliefApplication disasterReliefApplication);
 
     public AjaxResult updateDisasterReliefApplicationRt(DisasterReliefApplication disasterReliefApplication);
+
+    public AjaxResult cancel(DisasterReliefApplication disasterReliefApplication);
 
     /**
      * 批量删除灾害救助申报

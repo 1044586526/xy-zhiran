@@ -1,10 +1,7 @@
 package com.ruoyi.abuwx.service.impl;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.ruoyi.abuwx.domain.ShebaoEvaluation;
@@ -73,6 +70,31 @@ public class DisasterReliefApplicationServiceImpl implements IDisasterReliefAppl
         return disasterReliefApplicationMapper.selectDisasterReliefApplicationList(disasterReliefApplication);
     }
 
+    @Override
+    public List<DisasterReliefApplication> commentSet(DisasterReliefApplication disasterReliefApplication) {
+        List<DisasterReliefApplication> disasterReliefApplications = new ArrayList<>();
+        disasterReliefApplication.setStatus(null);
+        disasterReliefApplications = disasterReliefApplicationMapper.selectDisasterReliefApplicationList(disasterReliefApplication);
+        if (CollectionUtils.isNotEmpty(disasterReliefApplications)){
+            List<ShebaoEvaluation> shebaoEvaluations = shebaoEvaluationMapper.selectShebaoEvaluationList(new ShebaoEvaluation());
+            return disasterReliefApplications.stream()
+                    .filter(d ->d.getStatus()!= 2)
+                    .peek(dis -> {
+                List<ShebaoEvaluation> collect = shebaoEvaluations.stream()
+                        .filter(s -> s.getApplicationId().equals(dis.getId()) && s.getEvaluatorId().equals(String.valueOf(disasterReliefApplication.getUserId())))
+                        .collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(collect)) {
+                    // 已评议
+                    dis.setIsComment(0);
+                }else {
+                    dis.setIsComment(1);
+                }
+            }).collect(Collectors.toList());
+        }
+        return disasterReliefApplications;
+    }
+
+
     /**
      * 新增灾害救助申报
      * 
@@ -102,15 +124,26 @@ public class DisasterReliefApplicationServiceImpl implements IDisasterReliefAppl
     @Override
     public AjaxResult updateDisasterReliefApplicationRt(DisasterReliefApplication disasterReliefApplication)
     {
-
-        // 检查该用户是否已经评议
-        ShebaoEvaluation shebaoEvaluation = new ShebaoEvaluation();
-        shebaoEvaluation.setApplicationId(disasterReliefApplication.getId());
-        shebaoEvaluation.setEvaluatorId(String.valueOf(disasterReliefApplication.getUserId()));
-        List<ShebaoEvaluation> shebaoEvaluations = shebaoEvaluationMapper.selectShebaoEvaluationList(shebaoEvaluation);
-        if (CollectionUtils.isEmpty(shebaoEvaluations)){
-            return AjaxResult.error("请先进行评议操作");
+        // 评议操作
+        if (Objects.isNull(disasterReliefApplication.getFlagComment())){
+            ShebaoEvaluation shebaoEvaluation = new ShebaoEvaluation();
+            shebaoEvaluation.setApplicationId(disasterReliefApplication.getId());
+            shebaoEvaluation.setEvaluatorId(String.valueOf(disasterReliefApplication.getUserId()));
+            List<ShebaoEvaluation> shebaoEvaluations = shebaoEvaluationMapper.selectShebaoEvaluationList(shebaoEvaluation);
+            if (CollectionUtils.isEmpty(shebaoEvaluations)){
+                return AjaxResult.error("请先进行评议操作");
+            }
         }
+
+        disasterReliefApplication.setUpdateTime(DateUtils.getNowDate());
+        return AjaxResult.success(disasterReliefApplicationMapper.updateDisasterReliefApplication(disasterReliefApplication));
+    }
+
+    @Override
+    public AjaxResult cancel(DisasterReliefApplication disasterReliefApplication)
+    {
+
+        // 删除评议记录
 
         disasterReliefApplication.setUpdateTime(DateUtils.getNowDate());
         return AjaxResult.success(disasterReliefApplicationMapper.updateDisasterReliefApplication(disasterReliefApplication));
@@ -222,15 +255,14 @@ public class DisasterReliefApplicationServiceImpl implements IDisasterReliefAppl
         List<ShebaoEvaluation> shebaoEvaluations = shebaoEvaluationMapper.selectShebaoEvaluationList(null);
         if (CollectionUtils.isNotEmpty(disasterReliefApplications)){
             result.put("all",disasterReliefApplications.size());
-            result.put("success",disasterReliefApplications.stream().filter(d -> d.getStatus() == 1).collect(Collectors.toList()).size());
-            result.put("fault",disasterReliefApplications.stream().filter(d -> d.getStatus() == 2).collect(Collectors.toList()).size());
-            result.put("pending",disasterReliefApplications.stream().filter(d -> d.getStatus() == 0).collect(Collectors.toList()).size());
-            result.put("issued",disasterReliefApplications.stream().filter(d -> d.getStatus() == 3).collect(Collectors.toList()).size());
+            result.put("success", (int) disasterReliefApplications.stream().filter(d -> d.getStatus() == 1).count());
+            result.put("fault", (int) disasterReliefApplications.stream().filter(d -> d.getStatus() == 2).count());
+            result.put("pending", (int) disasterReliefApplications.stream().filter(d -> d.getStatus() == 0).count());
+            result.put("issued", (int) disasterReliefApplications.stream().filter(d -> d.getStatus() == 3).count());
             if (CollectionUtils.isNotEmpty(shebaoEvaluations)){
                 List<Long> collect = shebaoEvaluations.stream().map(ShebaoEvaluation::getApplicationId).collect(Collectors.toList());
-                result.put("comment",disasterReliefApplications.stream()
-                        .filter(d -> d.getStatus() == 0 && !collect.contains(d.getId()))
-                        .collect(Collectors.toList()).size());
+                result.put("comment", (int) disasterReliefApplications.stream()
+                        .filter(d -> d.getStatus() == 0 && !collect.contains(d.getId())).count());
             }
         }
         return result;

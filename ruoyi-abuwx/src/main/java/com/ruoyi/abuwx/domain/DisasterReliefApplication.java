@@ -135,6 +135,29 @@ public class DisasterReliefApplication extends BaseEntity
     @TableField(exist = false)
     private Integer userId;
 
+    @TableField(exist = false)
+    private Integer flagComment;
+
+    @TableField(exist = false)
+    private Integer isComment;
+
+
+    public Integer getIsComment() {
+        return isComment;
+    }
+
+    public void setIsComment(Integer isComment) {
+        this.isComment = isComment;
+    }
+
+    public Integer getFlagComment() {
+        return flagComment;
+    }
+
+    public void setFlagComment(Integer flagComment) {
+        this.flagComment = flagComment;
+    }
+
     public Integer getUserId() {
         return userId;
     }

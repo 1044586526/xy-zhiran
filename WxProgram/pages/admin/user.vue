@@ -205,7 +205,6 @@
 				filterOptions: [
 					{ label: '全部用户', value: 'all' },
 					{ label: '申请人', value: 'user' },
-					{ label: '评议员', value: 'reviewer' },
 					{ label: '管理员', value: 'admin' },
 					{ label: '已禁用', value: 'inactive' }
 				],
@@ -213,7 +212,6 @@
 				// 用户类型选项
 				userTypes: [
 					{ label: '申请人', value: 'user' },
-					{ label: '评议员', value: 'reviewer' },
 					{ label: '管理员', value: 'admin' }
 				],
 				// 状态选项

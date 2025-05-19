@@ -155,10 +155,10 @@
 
 				
 				<!-- 评议意见 -->
-			<!-- 	<view class="opinion-section">
+				<view class="opinion-section" v-if="currentApplication.isComment !== 0">
 					<text class="section-title">评议意见</text>
 					<textarea class="opinion-input" v-model="evaluation.opinion" placeholder="请输入您的评议意见..."></textarea>
-				</view> -->
+				</view>
 				
 			</scroll-view>
 			
@@ -166,7 +166,10 @@
 				<view class="modal-btn cancel-btn" @tap="cancelEvaluation">
 					<text>取消</text>
 				</view>
-				<view class="modal-btn confirm-btn" @tap="submitEvaluation" v-if="!currentApplication.hasEvaluated">
+				<view class="modal-btn fault-btn" @tap="faultEvaluation" v-if="currentApplication.isComment !== 0">
+					<text>驳回</text>
+				</view>
+				<view class="modal-btn confirm-btn" @tap="submitEvaluation" v-if="currentApplication.isComment !== 0">
 					<text>提交评议</text>
 				</view>
 			</view>
@@ -518,7 +521,7 @@
 						
 						// 发送请求获取申请列表
 						uni.request({
-							url: `${baseUrl}shebao/comment`,
+							url: `${baseUrl}shebao/commentSet`,
 							method: 'POST',
 							data: requestData,
 							header: {
@@ -545,7 +548,7 @@
 								if (res.data && res.data.code === 200) {
 									// 处理返回的数据
 									let applications = [];
-									
+
 									// 兼容多种数据结构
 									if (res.data.data) {
 										if (Array.isArray(res.data.data)) {
@@ -563,7 +566,7 @@
 											(res.data.data.total || applications.length);
 										
 										// 加载完申请列表后，检查每个申请的评议状态
-										this.checkEvaluationStatus();
+										// this.checkEvaluationStatus();
 									} else {
 										// 如果返回空数据，显示提示
 										uni.showToast({
@@ -640,11 +643,11 @@
 					
 					this.currentApplication = JSON.parse(JSON.stringify(application));
 					
-					// 重置评议数据
-					this.resetEvaluation();
+					// // 重置评议数据
+					// this.resetEvaluation();
 					
-					// 加载历史评议
-					this.loadEvaluationHistory(application.id);
+					// // 加载历史评议
+					// this.loadEvaluationHistory(application.id);
 					
 					// 显示评议弹窗
 					this.showEvaluationModal = true;
@@ -789,6 +792,91 @@
 			// 取消评议
 			cancelEvaluation() {
 				this.showEvaluationModal = false;
+			},
+			
+			//驳回
+			faultEvaluation() {
+				if (!this.currentApplication && this.currentApplication.id) {
+					uni.showToast({
+						title: '申请ID无效',
+						icon: 'none'
+					});
+					return;
+				}
+				
+				uni.showLoading({
+					title: '提交中...'
+				});
+				
+				if (!baseUrl) {
+					uni.hideLoading();
+					// uni.showToast({
+					// 	title: 'API地址未配置',
+					// 	icon: 'none'
+					// });
+					return;
+				}
+				let userInfo = uni.getStorageSync('user_info');
+				if (Array.isArray(userInfo) && userInfo.length > 0) {
+					userInfo = userInfo[0];
+				} else if (!userInfo) {
+					userInfo = {};
+				}
+				// 根据具体需求准备提交数据
+				const approvalData = {
+					id:this.currentApplication.id,
+					userId: userInfo.id,
+					status: 2, // 3是审核通过，2是驳回
+					auditRemark:this.evaluation.opinion,
+					flagComment: 1
+				};
+				
+				console.log('提交审批数据:', approvalData);
+				
+				
+				// 发送审批请求
+				uni.request({
+					url: `${baseUrl}list/update`,
+					method: 'POST',
+					data: approvalData,
+					header: {
+						'content-type': 'application/json',
+						'Authorization': uni.getStorageSync('token') || ''
+					},
+					success: (res) => {
+						uni.hideLoading();
+						
+						if (res.statusCode === 200 && res.data.code === 200) {
+							uni.showToast({
+								title: '审批操作成功',
+								icon: 'success'
+							});
+							
+							// 关闭确认窗口
+							this.showConfirm = false;
+							
+							this.loadApplicationList()
+							
+							// 延迟返回
+							setTimeout(() => {
+								uni.navigateBack();
+							}, 1500);
+						} else {
+							uni.showToast({
+								title: res.data.msg || '审批操作失败',
+								icon: 'none'
+							});
+						}
+					},
+					fail: (err) => {
+						uni.hideLoading();
+						uni.showToast({
+							title: '网络请求失败',
+							icon: 'none'
+						});
+						console.error('审批请求失败:', err);
+					}
+				});
 			},
 			
 			// 提交评议 - 添加错误处理和权限检查
@@ -942,30 +1030,23 @@
 			
 			// 获取评议状态
 			getEvaluationStatus(application) {
-				try {
-					if (this.hasEvaluated(application)) {
-						return 'evaluated';
-					} else {
-						return 'pending';
-					}
-				} catch (error) {
-					console.error('获取评议状态出错:', error);
+				if (application.isComment === 0) {
+					return 'evaluated';
+				} else {
 					return 'pending';
 				}
 			},
 			
 			// 获取评议状态文本
 			getEvaluationStatusText(application) {
-				try {
-					if (this.hasEvaluated(application)) {
-						return '已评议';
-					} else {
-						return '待评议';
-					}
-				} catch (error) {
-					console.error('获取评议状态文本出错:', error);
-					return '未知状态';
+				if (application.isComment === 0) {
+					return '已评议';
+				} else if(application.isComment ===  1) {
+					return '待评议';
+				} else {
+					return "未知状态"
 				}
+
 			},
 			
 			// 获取过滤名称
@@ -1029,7 +1110,8 @@
 								cardNo: this.desensitizeIDCard(item.cardNo),
 								familySize: item.familySize,
 								address: item.address,
-								requestAmount: item.requestAmount
+								requestAmount: item.requestAmount,
+								isComment:item.isComment
 								
 							};
 						} catch (error) {
@@ -1484,6 +1566,10 @@
 
 	.confirm-btn {
 		background-color: #1890FF;
+		color: #FFFFFF;
+	}
+	.fault-btn {
+		background-color: #ff5500;
 		color: #FFFFFF;
 	}
 
