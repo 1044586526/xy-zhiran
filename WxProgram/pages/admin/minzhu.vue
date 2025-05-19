@@ -166,7 +166,7 @@
 				<view class="modal-btn cancel-btn" @tap="cancelEvaluation">
 					<text>取消</text>
 				</view>
-				<view class="modal-btn confirm-btn" @tap="submitEvaluation" v-if="currentApplication.status !== 1">
+				<view class="modal-btn confirm-btn" @tap="submitEvaluation" v-if="!currentApplication.hasEvaluated">
 					<text>提交评议</text>
 				</view>
 			</view>
@@ -710,7 +710,6 @@
 									const userEvaluation = res.data.data.find(
 										item => item.evaluatorId == (this.evaluatorId || this.userId)
 									);
-									console.log(userEvaluation)
 									if (userEvaluation) {
 										// 更新当前申请的评议状态
 										this.updateApplicationEvaluationStatus(applicationId, true);

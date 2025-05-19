@@ -100,7 +100,7 @@
                 <text class="remark-label">审核备注：</text>
                 <text class="remark-content">{{item.remark}}</text>
               </view>
-              <button class="btn-detail" @tap="viewDetail(item)">查看详情</button>
+              <!-- <button class="btn-detail" @tap="viewDetail(item)">查看详情</button> -->
             </view>
           </view>
         </view>

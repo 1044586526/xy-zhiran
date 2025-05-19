@@ -226,12 +226,12 @@
 			return {
 				userName: '', // 管理员姓名，从用户信息中获取
 				stats: {
-					total: 10,
-					pending: 2,
-					approved: 2,
-					rejected: 2,
-					today: 5,
-					reviewPending: 3
+					total: 0,
+					pending: 0,
+					approved: 0,
+					rejected: 0,
+					today: 0,
+					reviewPending: 0
 				},
 				pendingTasks: [
 					{
@@ -261,6 +261,7 @@
 		onShow() {
 			this.loadUserInfo();
 			this.fetchStatistics();
+			this.loadGetNum()
 		},
 		methods: {
 			// 加载用户信息
@@ -346,18 +347,8 @@
 				uni.showLoading({
 					title: '刷新中...'
 				});
+				this.loadGetNum()
 				
-				setTimeout(() => {
-					this.stats.pending = Math.floor(Math.random() * 5) + 5;
-					this.stats.today = Math.floor(Math.random() * 3) + 3;
-					this.stats.total = this.stats.approved + this.stats.rejected + this.stats.pending;
-					
-					uni.hideLoading();
-					uni.showToast({
-						title: '数据已更新',
-						icon: 'success'
-					});
-				}, 800);
 			},
 			
 			loadGetNum() {
@@ -405,18 +396,6 @@
 			
 			// 刷新所有数据
 			refreshData() {
-				// uni.showLoading({
-				// 	title: '刷新中...'
-				// });
-				
-				// setTimeout(() => {
-				// 	this.fetchStatistics();
-				// 	uni.hideLoading();
-				// 	uni.showToast({
-				// 		title: '数据已更新',
-				// 		icon: 'success'
-				// 	});
-				// }, 800);
 				uni.reLaunch({
 					url: '/pages/me/me',
 					success: (res) => {
