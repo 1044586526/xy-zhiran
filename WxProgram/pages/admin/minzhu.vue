@@ -98,121 +98,75 @@
 			
 			<scroll-view class="modal-body" scroll-y="true">
 				<!-- 申请人信息 -->
-				<view class="applicant-summary">
-					<view class="applicant-avatar">
-						<text>{{ currentApplication.name  }}</text>
+				<!-- 申请基本信息卡片 -->
+				<view class="info-card">
+					<view class="card-header">
+						<text class="card-title">申请人信息</text>
 					</view>
-					<view class="applicant-info">
-						<text class="applicant-details">
-							{{ formatDisasterType(currentApplication.disasterType) }} | 损失: {{ currentApplication.estimatedLoss || 0 }}元
-							
-						</text>
+					
+					<view class="applicant-summary">
+						<!-- <view class="applicant-avatar">
+							<text>{{ applicationData.name ? applicationData.name.substring(0, 1) : '?' }}</text>
+						</view> -->
+						<view class="applicant-info">
+								<text class="label">姓名：</text>
+							<text class="applicant-name">{{ currentApplication.name || '暂无' }}</text>
+						</view>
+						<view class="applicant-info">
+								<text class="label">联系方式：</text>
+							<text class="applicant-details">{{ currentApplication.phone || '暂无电话' }}</text>
+						</view>
+					</view>
+					
+					<view class="info-grid">
+						<view class="info-item">
+							<text class="label">身份证号：</text>
+							<text class="value">{{ desensitizeIDCard(currentApplication.cardNo) || '暂无' }}</text>
+						</view>
+						<view class="info-item">
+							<text class="label">家庭人口：</text>
+							<text class="value">{{ currentApplication.familySize || '0' }} 人</text>
+						</view>
+						<view class="info-item full-width">
+							<text class="label">家庭住址</text>
+							<text class="value">{{ currentApplication.address || '暂无' }}</text>
+						</view>
 					</view>
 				</view>
 				
 				<!-- 灾情简述 -->
 				<view class="disaster-summary">
 					<text class="summary-label">灾情概述</text>
-					<text class="summary-content">{{ currentApplication.disasterDesc || '暂无描述' }}</text>
+					<text class="summary-date">发生日期：{{ currentApplication.disasterDate }}</text>
 				</view>
-				
-				<!-- 评分区域 -->
-				<view class="score-section">
-					<text class="section-title">评分</text>
-					<text class="section-desc">请根据申请人实际情况进行客观评分</text>
-					
-					<view class="score-items">
-						<view class="score-item">
-							<text class="score-label">真实性</text>
-							<view class="score-stars-container">
-								<view class="score-stars">
-									<view class="star" 
-										v-for="i in 5" 
-										:key="i" 
-										:class="{ active: i <= evaluation.truthScore, hover: i <= hoverScore.truth && !evaluation.truthScore }"
-										@tap="setTruthScore(i)"
-										@touchstart="setHoverScore('truth', i)"
-										@touchend="clearHoverScore('truth')">
-										★
-									</view>
-								</view>
-								<text class="score-tips">{{ getScoreTips('truth', evaluation.truthScore) }}</text>
-							</view>
-							<text class="score-value">{{ evaluation.truthScore }}分</text>
-						</view>
-						
-						<view class="score-item">
-							<text class="score-label">严重程度</text>
-							<view class="score-stars-container">
-								<view class="score-stars">
-									<view class="star" 
-										v-for="i in 5" 
-										:key="i" 
-										:class="{ active: i <= evaluation.severityScore, hover: i <= hoverScore.severity && !evaluation.severityScore }"
-										@tap="setSeverityScore(i)"
-										@touchstart="setHoverScore('severity', i)"
-										@touchend="clearHoverScore('severity')">
-										★
-									</view>
-								</view>
-								<text class="score-tips">{{ getScoreTips('severity', evaluation.severityScore) }}</text>
-							</view>
-							<text class="score-value">{{ evaluation.severityScore }}分</text>
-						</view>
-						
-						<view class="score-item">
-							<text class="score-label">救助必要性</text>
-							<view class="score-stars-container">
-								<view class="score-stars">
-									<view class="star" 
-										v-for="i in 5" 
-										:key="i" 
-										:class="{ active: i <= evaluation.necessityScore, hover: i <= hoverScore.necessity && !evaluation.necessityScore }"
-										@tap="setNecessityScore(i)"
-										@touchstart="setHoverScore('necessity', i)"
-										@touchend="clearHoverScore('necessity')">
-										★
-									</view>
-								</view>
-								<text class="score-tips">{{ getScoreTips('necessity', evaluation.necessityScore) }}</text>
-							</view>
-							<text class="score-value">{{ evaluation.necessityScore }}分</text>
-						</view>
-					</view>
-					
-					<view class="total-score">
-						<text class="total-label">总体评分</text>
-						<text class="total-value">{{ calculateTotalScore() }}分</text>
-						<text class="total-desc">{{ getTotalScoreDesc() }}</text>
+				<view class="disaster-detail">
+					<text class="disaster-label">{{currentApplication.disasterDesc}}</text>
+					<view class="disaster-desc">
+						<text class="disaster-title">经济损失：</text>
+						<text class="disaster-value">{{currentApplication.estimatedLoss}}元</text>
 					</view>
 				</view>
+				<view class="disaster-detail">
+					<view class="disaster-desc">
+						<text class="disaster-title">救助需求：</text>
+						<text class="disaster-value">申请救助：{{currentApplication.requestAmount || '-'}}元</text>
+					</view>
+				</view>
+
 				
 				<!-- 评议意见 -->
-				<view class="opinion-section">
+			<!-- 	<view class="opinion-section">
 					<text class="section-title">评议意见</text>
 					<textarea class="opinion-input" v-model="evaluation.opinion" placeholder="请输入您的评议意见..."></textarea>
-				</view>
+				</view> -->
 				
-				<!-- 历史评议 -->
-				<view class="history-section" v-if="evaluationHistory.length > 0">
-					<text class="section-title">历史评议 ({{ evaluationHistory.length }}条)</text>
-					
-					<view class="history-item" v-for="(item, index) in evaluationHistory" :key="index">
-						<view class="history-header">
-							<text class="evaluator">{{ item.evaluatorName || '匿名评议' }}</text>
-							<text class="history-time">{{ formatDate(item.evaluationTime) }}</text>
-							<text class="history-score">{{ item.totalScore }}分</text>
-						</view>
-						<text class="history-opinion">{{ item.opinion || '无评议意见' }}</text>
-					</view>
-				</view>
 			</scroll-view>
 			
 			<view class="modal-footer">
 				<view class="modal-btn cancel-btn" @tap="cancelEvaluation">
 					<text>取消</text>
 				</view>
-				<view class="modal-btn confirm-btn" :class="{ disabled: !isEvaluationValid() }" @tap="submitEvaluation" v-if="!hasEvaluatedValue">
+				<view class="modal-btn confirm-btn" @tap="submitEvaluation" >
 					<text>提交评议</text>
 				</view>
 			</view>
@@ -557,14 +511,14 @@
 							pageNum: this.pageNum,
 							pageSize: this.pageSize,
 							status: 3,  // 只加载已通过审批的申请
-							evaluatorId: this.evaluatorId || this.userId // 添加评议员ID
+							userId: this.evaluatorId || this.userId // 添加评议员ID
 						};
 						
 						console.log('请求参数:', requestData);
 						
 						// 发送请求获取申请列表
 						uni.request({
-							url: `${baseUrl}shebao/list`,
+							url: `${baseUrl}shebao/comment`,
 							method: 'POST',
 							data: requestData,
 							header: {
@@ -850,13 +804,13 @@
 						return;
 					}
 					
-					if (!this.isEvaluationValid()) {
-						uni.showToast({
-							title: '请完成所有评分项',
-							icon: 'none'
-						});
-						return;
-					}
+					// if (!this.isEvaluationValid()) {
+					// 	uni.showToast({
+					// 		title: '请完成所有评分项',
+					// 		icon: 'none'
+					// 	});
+					// 	return;
+					// }
 					
 					uni.showLoading({
 						title: '提交中...'
@@ -1049,6 +1003,7 @@
 			
 			// 格式化申请数据 - 添加错误处理
 			formatApplicationData(applications) {
+				console.log(applications)
 				try {
 					if (!Array.isArray(applications)) {
 						console.error('应用数据不是数组:', applications);
@@ -1071,7 +1026,13 @@
 								createTime: item.createTime,
 								evaluationCount: item.evaluationCount || 0,
 								averageScore: item.averageScore || 0,
-								hasEvaluated: item.hasEvaluated || false
+								hasEvaluated: item.hasEvaluated || false,
+								phone: item.phone,
+								cardNo: this.desensitizeIDCard(item.cardNo),
+								familySize: item.familySize,
+								address: item.address,
+								requestAmount: item.requestAmount
+								
 							};
 						} catch (error) {
 							console.error('格式化单条申请数据出错:', error);
@@ -1082,6 +1043,21 @@
 					console.error('格式化申请数据出错:', error);
 					return [];
 				}
+			},
+			
+			desensitizeIDCard(idCard) {
+			  if (!idCard || idCard.length < 6) {
+			    return '—';
+			  }
+			
+			  // 中国大陆的身份证号码长度为18位
+			  const idLength = idCard.length;
+			  // 保留前6位和后4位，中间替换为星号
+			  const prefix = idCard.substr(0, 4);
+			  const suffix = idCard.substr(idLength - 4);
+			  const middle = '*'.repeat(idLength - 8);
+			
+			  return prefix + middle + suffix;
 			},
 			
 			// 格式化日期 - 添加错误处理
@@ -1822,5 +1798,93 @@
 		font-size: 26rpx;
 		color: #606266;
 		line-height: 1.5;
+	}
+	.applicant-summary {
+		.applicant-title {
+			font-size: 30rpx;
+			font-weight: 600;
+			border-bottom: 1px solid #EBEEF5;
+			padding-bottom: 10rpx;
+		}
+	}
+	
+	.info-card {
+		background-color: #FFFFFF;
+		border-radius: 16rpx;
+		padding: 30rpx;
+		margin-bottom: 30rpx;
+	}
+	
+	.card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20rpx;
+		padding-bottom: 16rpx;
+		border-bottom: 1rpx solid #F0F0F0;
+	}
+	
+	.card-title {
+		font-size: 30rpx;
+		font-weight: bold;
+		color: #333333;
+	}
+	/* 基本信息网格 */
+	.info-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 20rpx;
+	}
+	
+	.info-item {
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.label {
+		font-size: 24rpx;
+		color: #909399;
+		margin-bottom: 8rpx;
+	}
+	
+	.value {
+		font-size: 28rpx;
+		color: #333333;
+		word-break: break-all;
+	}
+	.disaster-summary {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 20rpx;
+		padding-bottom: 10rpx;
+		border-bottom: 1rpx solid #F0F0F0;
+		.summary-date {
+			color: #909399;
+			font-size: 24rpx;
+		}
+	}
+	.disaster-detail {
+		padding: 10rpx 0;
+		.disaster-label {
+			font-size: 24rpx;
+			color: #909399;
+		}
+		.disaster-desc {
+			display: flex;
+			justify-content: space-between;
+			padding-bottom: 10rpx;
+			margin-bottom: 20rpx;
+			border-bottom: 1rpx solid #F0F0F0;
+			.disaster-title {
+				font-size: 28rpx;
+				color: #333333;
+				font-weight: bold;
+			}
+			.disaster-value {
+				font-size: 28rpx;
+				color: #da0000;
+				font-weight: bold;
+			}
+		}
 	}
 </style>

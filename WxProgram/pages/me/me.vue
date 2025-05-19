@@ -73,7 +73,7 @@
 					</view>
 				</view>
 				
-				<view class="menu-item" v-if="isReviewer" @click="goToEvaluation">
+				<view class="menu-item" v-if="isAdmin" @click="goToEvaluation">
 					<view class="menu-icon purple">
 						<uni-icons type="star-filled" size="24" color="#ffffff"></uni-icons>
 					</view>
@@ -316,7 +316,7 @@
 					return;
 				}
 				
-				if (!this.isReviewer) {
+				if (!this.isAdmin) {
 					uni.showToast({
 						title: '您没有评议员权限',
 						icon: 'none',
@@ -326,7 +326,7 @@
 				}
 				
 				uni.navigateTo({
-					url: '/pages/admin/shenpiList',
+					url: '/pages/admin/minzhu',
 					success: (res) => {
 						console.log('跳转到民主评议页面成功');
 					},
